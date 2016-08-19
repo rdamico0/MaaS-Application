@@ -2,6 +2,6 @@
 <html>
 <meta charset=utf-8/>
 <title>My First React Router App</title>
-<div id=app>OOOO</div>
+<div id=app></div>
 <link rel=stylesheet href=/css/main.css>
 <script src="/bundle.js"></script>

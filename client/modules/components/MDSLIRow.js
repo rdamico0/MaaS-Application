@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import * as actions from '../actions/RootAction'
 import MButton from './MButton'
+import MLink from './MLink'
 
 class MDSLIRow extends Component {
   constructor(props) {
@@ -18,7 +19,7 @@ class MDSLIRow extends Component {
     return (
       <tr>
         <td>{this.props.data.id}</td>
-        <td>{this.props.data.name}</td>
+        <td><MLink to="/execdsli">{this.props.data.name}</MLink ></td>
         <td>{this.props.data.lastModifiedDate}</td>
         <td><MButton label = "Edit"
           onClick = {() => {
