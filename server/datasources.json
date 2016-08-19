@@ -1,0 +1,25 @@
+{
+  "db": {
+    "url": "mongodb://client:client@ds011452.mlab.com:11452/maas",
+    "name": "db",
+    "defaultForType": "mongodb",
+    "connector": "loopback-connector-mongodb"
+  },
+  "emailSender": {
+    "name": "emailSender",
+    "defaultForType": "mail",
+    "connector": "mail",
+    "transports": [
+      {
+        "type": "SMTP",
+        "host": "smtp.gmail.com",
+        "secure": true,
+        "port": 465,
+        "auth": {
+          "user": "matrioska.io.go@gmail.com",
+          "pass": "Ritardatari2016"
+        }
+      }
+    ]
+  }
+}

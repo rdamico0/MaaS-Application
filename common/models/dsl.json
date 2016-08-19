@@ -1,0 +1,52 @@
+{
+  "name": "DSL",
+  "description": "Entità che rappresenta le specifiche di DSL",
+  "plural": "dsl_definitions",
+  "base": "PersistedModel",
+  "strict": false,
+  "idInjection": true,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "code": {
+      "type": "string",
+      "required": true
+    },
+    "lastModifiedDate": {
+      "type": "date",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "execute": {
+      "type": "belongsTo",
+      "model": "Database",
+      "foreignKey": ""
+    },
+    "writer": {
+      "type": "belongsTo",
+      "model": "Account",
+      "foreignKey": ""
+    },
+    "belongsToCompany": {
+      "type": "belongsTo",
+      "model": "Company",
+      "foreignKey": ""
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {}
+}

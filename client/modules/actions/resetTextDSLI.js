@@ -1,0 +1,2 @@
+// credo che non sia necessaria un'azione per effettuare questa operazione, l'unica sua utilità sarebbe specificare nel log cosa è stato
+// effettuato, credo che tale operazione sia perfettamente attuabile dalla parte grafica (component)

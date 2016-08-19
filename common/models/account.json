@@ -1,0 +1,62 @@
+{
+  "name": "Account",
+  "description": "Entità che rappresenta un utente in MaaS",
+  "plural": "accounts",
+  "base": "User",
+  "strict": false,
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "email": {
+      "type": "string",
+      "id": true,
+      "required": true,
+      "index": true
+    },
+    "subscribedAt": {
+      "type": "date",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "company": {
+      "type": "belongsTo",
+      "model": "Company",
+      "foreignKey": ""
+    },
+    "role": {
+      "type": "belongsTo",
+      "model": "Duty",
+      "foreignKey": ""
+    },
+    "dsls": {
+      "type": "hasMany",
+      "model": "DSL",
+      "foreignKey": ""
+    },
+    "home": {
+      "type": "belongsTo",
+      "model": "DSL",
+      "foreignKey": ""
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "head"
+    }
+  ],
+  "methods": {}
+}

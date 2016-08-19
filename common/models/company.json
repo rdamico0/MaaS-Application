@@ -1,0 +1,55 @@
+{
+  "name": "Company",
+  "description": "Entità che rappresenta una azienda in MaaS ",
+  "plural": "companies",
+  "base": "PersistedModel",
+  "strict": false,
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true
+  },
+  "properties": {
+    "organization": {
+      "type": "string",
+      "id": true,
+      "required": true,
+      "index": true
+    },
+    "subscribedAt": {
+      "type": "date",
+      "required": true
+    }
+  },
+  "validations": [],
+  "relations": {
+    "dsls": {
+      "type": "hasMany",
+      "model": "DSL",
+      "foreignKey": ""
+    },
+    "databases": {
+      "type": "hasMany",
+      "model": "Database",
+      "foreignKey": ""
+    },
+    "users": {
+      "type": "hasMany",
+      "model": "Account",
+      "foreignKey": ""
+    },
+    "owner": {
+      "type": "belongsTo",
+      "model": "Account",
+      "foreignKey": ""
+    }
+  },
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW"
+    }
+  ],
+  "methods": {}
+}
