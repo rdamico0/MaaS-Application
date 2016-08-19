@@ -41,7 +41,7 @@ module.exports = {
 
 		    if(hiddenMethods.length > 0)
 		    {
-		       // console.log('\nRemote mehtods hidden for', modelName, ':', hiddenMethods.join(', '), '\n');
+		        console.log('\nRemote mehtods hidden for', modelName, ':', hiddenMethods.join(', '), '\n');
 		    }
 		}
 	}
