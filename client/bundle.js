@@ -7665,9 +7665,11 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var api = 'https://mass-demo.herokuapp.com/api/';
+
 	var goto = (0, _reactRouterRedux.routerMiddleware)(_reactRouter.browserHistory);
 	var logger = (0, _reduxLogger2.default)();
-	var store = (0, _redux.createStore)(_RootReducer2.default, (0, _redux.applyMiddleware)(goto, logger, _reduxThunk2.default));
+	var store = (0, _redux.createStore)(_RootReducer2.default, (0, _redux.applyMiddleware)(goto, logger, _reduxThunk2.default.withExtraArgument(api)));
 
 	// Create an enhanced history that syncs navigation events with the store
 	var history = (0, _reactRouterRedux.syncHistoryWithStore)(_reactRouter.browserHistory, store);
@@ -34372,6 +34374,8 @@
 	  };
 	}
 	/*
+	=======
+	>>>>>>> master
 	export function updateCompanies(json){
 	  return { type: 'RECEIVED_COMPANIES',
 	           companies : json
@@ -36211,6 +36215,44 @@
 			dsli.name = "Clone of " + dsli.name;
 			dispatch((0, _newDSLI.newDSLI)(dsli));
 		};
+		/*
+	 export function requestCloneDSLI() {
+	 	return {
+	 		type: 'waiting',
+	 		operation: 'cloneDSLI'
+	 	}
+	 }
+	 
+	 export function receiveCloneDSLI(bool, data) {
+	 	if(bool) return {
+	 		type: 'cloneDSLI',
+	 		DSLI: data
+	 	}
+	 	else return {
+	 		type: 'error',
+	 		error: data
+	 	}
+	 }
+	 
+	 export function cloneDSLI(newName) {
+	 	return function(dispatch){
+	 		dispatch(requestCloneDSLI())
+	 		return request
+	 			.post('url1')
+	 			.send({
+	 				name: newName,
+	 				code: state.currentDSLI.code //non credo sia proprio così
+	 			})
+	 			.then(
+	 				function(result){
+	 					dispatch(receiveCloneDSLI(true, result))
+	 				},
+	 				function(error){
+	 					dispatch(receiveCloneDSLI(false, error))
+	 				}
+	 			)
+	 	}
+	 */
 	}
 
 /***/ },
@@ -36250,9 +36292,9 @@
 	}
 
 	function newDSLI(data) {
-		return function (dispatch, getState) {
+		return function (dispatch, getState, api) {
 			dispatch(requestNewDSLI());
-			return _superagent2.default.post('http://www.zinoo.it:3000/api/companies/' + getState().loggedUser.company + '/dsls?access_token=' + getState().loggedUser.token).send({
+			return _superagent2.default.post(api + 'companies/' + getState().loggedUser.company + '/dsls?access_token=' + getState().loggedUser.token).send({
 				name: data.name,
 				code: data.code,
 				lastModifiedDate: Date(),
@@ -36305,12 +36347,12 @@
 	}
 
 	function checkCompanyName(data) {
-		return function (dispatch) {
+		return function (dispatch, getState, api) {
 			dispatch(requestCheckCompanyName());
-			return _superagent2.default.head('http://www.zinoo.it:3000/api/companies/' + data.companyName).then(function () {
+			return _superagent2.default.head(api + 'companies/' + data.companyName).then(function () {
 				dispatch(receiveCheckCompanyName(true), 0);
 			}, function () {
-				return _superagent2.default.head('http://www.zinoo.it:3000/api/accounts/' + data.ownerMail).then(function (res) {
+				return _superagent2.default.head(api + 'accounts/' + data.ownerMail).then(function (res) {
 					dispatch(receiveCheckCompanyName(true), 1);
 				}, function () {
 					dispatch(receiveCheckCompanyName(false), 2);
@@ -36337,9 +36379,9 @@
 	}
 
 	function companyRegistration(data) {
-		return function (dispatch) {
+		return function (dispatch, getState, api) {
 			dispatch(requestCompanyRegistration());
-			return _superagent2.default.post('http://www.zinoo.it:3000/api/companies').send({
+			return _superagent2.default.post(api + 'companies').send({
 				organization: data.companyName,
 				ownerId: data.ownerMail,
 				subscribedAt: Date()
@@ -36388,9 +36430,9 @@
 	}
 
 	function checkUsername(username) {
-		return function (dispatch) {
+		return function (dispatch, getState, api) {
 			dispatch(requestCheckUsername());
-			_superagent2.default.head('http://www.zinoo.it:3000/api/accounts/' + username).then(function (res) {
+			_superagent2.default.head(api + 'accounts/' + username).then(function (res) {
 				dispatch(receiveCheckUsername(true));
 			}, function () {
 				dispatch(receiveCheckUsername(false));
@@ -36417,10 +36459,10 @@
 	}
 
 	function userRegistration(data, role) {
-		return function (dispatch) {
+		return function (dispatch, getState, api) {
 			dispatch(requestUserRegistration());
 			console.log(data);
-			return _superagent2.default.post('http://www.zinoo.it:3000/api/companies/' + data.companyName + '/users').send({
+			return _superagent2.default.post(api + 'companies/' + data.companyName + '/users').send({
 				email: data.ownerMail,
 				password: "asd",
 				realm: data.companyName,
@@ -36469,9 +36511,9 @@
 	}
 
 	function deleteDSLI(dsliId) {
-		return function (dispatch, getState) {
+		return function (dispatch, getState, api) {
 			dispatch(requestDeleteDSLI());
-			return _superagent2.default.del('http://www.zinoo.it:3000/api/companies/' + getState().loggedUser.company + '/dsls/' + dsliId + '?access_token=' + getState().loggedUser.token).then(function () {
+			return _superagent2.default.del(api + 'companies/' + getState().loggedUser.company + '/dsls/' + dsliId + '?access_token=' + getState().loggedUser.token).then(function () {
 				dispatch(receiveDeleteDSLI(true));
 			}, function (error) {
 				dispatch(receiveDeleteDSLI(false, error));
@@ -36551,9 +36593,9 @@
 	}
 
 	function deleteData(dataId) {
-		return function (dispatch, getState) {
+		return function (dispatch, getState, api) {
 			dispatch(requestDeleteData());
-			return _superagent2.default.del('http://www.zinoo.it:3000/api/companies/' + getState().loggedUser.company + '/databases/' + dataId + '?access_token=' + getState().loggedUser.token).then(function () {
+			return _superagent2.default.del(api + 'companies/' + getState().loggedUser.company + '/databases/' + dataId + '?access_token=' + getState().loggedUser.token).then(function () {
 				dispatch(receiveDeleteData(true), dataId);
 			}, function (error) {
 				dispatch(receiveDeleteData(false, error));
@@ -36691,9 +36733,9 @@
 	}
 
 	function getDSLIList() {
-		return function (dispatch, getState) {
+		return function (dispatch, getState, api) {
 			dispatch(requestDSLIList());
-			return _superagent2.default.get('http://www.zinoo.it:3000/api/companies/' + getState().loggedUser.company + '/dsls?access_token=' + getState().loggedUser.token).then(function (result) {
+			return _superagent2.default.get(api + 'companies/' + getState().loggedUser.company + '/dsls?access_token=' + getState().loggedUser.token).then(function (result) {
 				var res = JSON.parse(result.text);
 				dispatch(receiveDSLIList(true, res));
 			}, function (error) {
@@ -36741,9 +36783,9 @@
 	}
 
 	function login(json) {
-		return function (dispatch) {
+		return function (dispatch, getState, api) {
 			dispatch(requestLogin());
-			return _superagent2.default.post('http://www.zinoo.it:3000/api/accounts/login?include=user').send({
+			return _superagent2.default.post(api + 'accounts/login?include=user').send({
 				email: json.mail,
 				password: json.pwd
 			}).then(function (result) {
@@ -36841,10 +36883,10 @@
 	}
 
 	function saveTextDSLI(dsli) {
-		return function (dispatch, getState) {
+		return function (dispatch, getState, api) {
 			dispatch(requestSaveTextDSLI());
 			console.log(dsli);
-			return _superagent2.default.put('http://www.zinoo.it:3000/api/companies/' + getState().loggedUser.company + '/dsls/' + dsli.id + '?access_token=' + getState().loggedUser.token).send({
+			return _superagent2.default.put(api + 'companies/' + getState().loggedUser.company + '/dsls/' + dsli.id + '?access_token=' + getState().loggedUser.token).send({
 				name: dsli.name,
 				code: dsli.code,
 				lastModifiedDate: Date(),
@@ -36892,9 +36934,9 @@
 	}
 
 	function getDatabase(token) {
-		return function (dispatch, getState) {
+		return function (dispatch, getState, api) {
 			dispatch(requestDatabase());
-			return _superagent2.default.get('http://www.zinoo.it:3000/api/companies/' + getState().loggedUser.company + '/databases?access_token=' + getState().loggedUser.token).then(function (result) {
+			return _superagent2.default.get(api + 'companies/' + getState().loggedUser.company + '/databases?access_token=' + getState().loggedUser.token).then(function (result) {
 				var res = JSON.parse(result.text);
 				dispatch(receiveDatabase(true, res));
 			}, function (error) {
@@ -36937,9 +36979,9 @@
 	}
 
 	function addDatabase(data) {
-		return function (dispatch, getState) {
+		return function (dispatch, getState, api) {
 			dispatch(requestAddDatabase());
-			return _superagent2.default.post('http://www.zinoo.it:3000/api/companies/' + getState().loggedUser.company + '/databases?access_token=' + getState().loggedUser.token).send({
+			return _superagent2.default.post(api + 'companies/' + getState().loggedUser.company + '/databases?access_token=' + getState().loggedUser.token).send({
 				uri: data
 			}).then(function () {
 				dispatch(receiveAddDatabase(true));
