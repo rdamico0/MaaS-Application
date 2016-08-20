@@ -51,14 +51,14 @@ module.exports = function(Company) {
 
 	  });
 
-	Company.beforeRemote('**', function(context, whatever, next) {
+	/*Company.beforeRemote('**', function(context, whatever, next) {
 			console.log('generic');
 			var err = checkUser(context.req.accessToken.id, context.ctorArgs.id, 0)
 			if(err)
 				next(err)
 			else
 				next()
-	});
+	});*/
 
 	Company.beforeRemote('*.__findById__dsls', function(context, whatever, next) {
 		var err = checkUser(context.req.accessToken.id, context.ctorArgs.id, 0)
