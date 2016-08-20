@@ -1,7 +1,7 @@
 /*
 
 module.exports = function(Account) {
-
+	
 	var mte = ['login','logout','exists','confirm','resetPassword'];
 	ut.disableAllMethodsBut(Account, mte);
 
@@ -39,8 +39,10 @@ var ut = require('./methodDisabling');
 
 module.exports = function(Account) {
 
+	var mte = ['login','logout','exists','confirm','resetPassword'];
+	ut.disableAllMethodsBut(Account, mte);
+
   Account.prototype.createAccessToken = function(ttl, options, cb) {
-		var user = options;
     if (cb === undefined && typeof options === 'function') {
       // createAccessToken(ttl, cb)
       cb = options;
@@ -57,18 +59,9 @@ module.exports = function(Account) {
     options = options || {};
     var userModel = this.constructor;
     ttl = Math.min(ttl || userModel.settings.ttl, userModel.settings.maxTTL);
-		var token = jwt.encode({
-		  email: user.email,
-			company: user.companyId,
-			duty: user.dutyId
-		}, app.get('jwtTokenSecret'));
     this.accessTokens.create({
-			id: token,
       ttl: ttl
     }, cb);
-
-		var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
-		console.log(decoded);
     return cb.promise;
   };
 
@@ -80,6 +73,7 @@ module.exports = function(Account) {
       } else if (credentials.username) {
         query.username = credentials.username;
       }
+    }
     return query;
   };
 
@@ -102,6 +96,7 @@ module.exports = function(Account) {
     }
 
     var query = self.normalizeCredentials(credentials);
+
     if (!query.email && !query.username) {
       var err2 = new Error('username or email is required');
       err2.statusCode = 400;
@@ -143,12 +138,11 @@ module.exports = function(Account) {
               if (user.createAccessToken.length === 2) {
                 user.createAccessToken(credentials.ttl, tokenHandler);
               } else {
-                user.createAccessToken(credentials.ttl, user, tokenHandler);
+                user.createAccessToken(credentials.ttl, credentials, tokenHandler);
               }
             }
           } else {
-						console.log(user);
-            console.log('The password is invalid for user %s', user.email || user.username);
+            console.log('The password is invalid for user %s', query.email || query.username);
             fn(defaultError);
           }
         });
@@ -517,7 +511,4 @@ module.exports = function(Account) {
 
   Account.setup();
 
-	var mte = ['login','logout','exists','confirm','resetPassword'];
-	ut.disableAllMethodsBut(Account, mte);
-
-};
+}

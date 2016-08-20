@@ -2,7 +2,7 @@
   "name": "Account",
   "description": "Entità che rappresenta un utente in MaaS",
   "plural": "accounts",
-  "base": "PersistedModel",
+  "base": "Persisted_Model",
   "strict": false,
   "idInjection": false,
   "options": {
@@ -56,6 +56,20 @@
       "foreignKey": ""
     }
   },
-  "acls": [],
+  "acls": [
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "EXECUTE",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "head"
+    }
+  ],
   "methods": {}
 }
