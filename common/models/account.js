@@ -202,8 +202,8 @@ module.exports = function(Account) {
     options.protocol = options.protocol || 'http';
 
     var app = userModel.app;
-    options.host = options.host || (app && app.get('host')) || 'localhost';
-    options.port = options.port || (app && app.get('port')) || 3000;
+    options.host = options.host || (app && app.get('clienthost')) || 'localhost';
+    //options.port = options.port || (app && app.get('port')) || 3000;
     options.restApiRoot = options.restApiRoot || (app && app.get('restApiRoot')) || '/api';
 
     var displayPort = (

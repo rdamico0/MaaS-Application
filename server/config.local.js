@@ -1,7 +1,5 @@
-if (typeof process.env.PORT !== 'undefined' || typeof process.env.HOST !== 'undefined')
+if (typeof process.env.PORT !== 'undefined')
 
-    module.exports = { port: process.env.PORT,
-					   host: 'mass-demo.herokuapp.com'
-};
+    module.exports = { port: process.env.PORT};
 else
     module.exports = { };
