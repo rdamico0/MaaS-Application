@@ -228,7 +228,7 @@ module.exports = function(Account) {
     var Email = options.mailer || this.constructor.email || registry.getModelByType(loopback.Email);
 
     // Set a default token generation function if one is not provided
-    var tokenGenerator = options.generateVerificationToken;
+    var tokenGenerator = options.generateVerificationToken || Account.generateVerificationToken;
 
     tokenGenerator(user, function(err, token) {
       if (err) { return fn(err); }
