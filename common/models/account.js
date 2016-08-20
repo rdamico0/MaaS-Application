@@ -215,7 +215,7 @@ module.exports = function(Account) {
       options.protocol +
       '://' +
       options.host +
-      displayPort +
+      //displayPort +
       options.restApiRoot +
       userModel.http.path +
       userModel.sharedClass.find('confirm', true).http.path +
