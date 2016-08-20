@@ -1,4 +1,7 @@
-if (typeof process.env.PORT !== 'undefined')
-    module.exports = { port: process.env.PORT };
+if (typeof process.env.PORT !== 'undefined' || typeof process.env.HOST !== 'undefined')
+
+    module.exports = { port: process.env.PORT 
+					   host: process.env.HOST
+};
 else
     module.exports = { };
