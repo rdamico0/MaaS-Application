@@ -37,18 +37,15 @@ module.exports = function(Company) {
 		  to: userInstance.email,
 		  from: 'noreply@loopback.com',
 		  subject: 'Thanks for registering.',
-		  redirect: '/verified',
+		  redirect: '/',
 		  user: userInstance
 		};
 
-		userInstance.verify(options, function(err, response) {
-		  if (err) return console.log(err);
-
-		  console.log('> verification email sent:', response);
-		  next();
-
-		});
-
+			userInstance.verify(options, function(err, response) {
+			  if (err) return console.log(err);
+			  	console.log('> verification email sent:', response);
+			  next();
+			});
 	  });
 
 	/*Company.beforeRemote('**', function(context, whatever, next) {
