@@ -257,8 +257,8 @@ module.exports = function(Account) {
 
       options.headers = options.headers || {};
 
-      var template = loopback.template(options.template);
-      options.html = template(options);
+      //var template = loopback.template(options.template);
+      //options.html = template(options);
       console.log('BOOOOOOOM');
       Email.send(options, function(err, email) {
         if (err) {
