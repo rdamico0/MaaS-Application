@@ -57,18 +57,17 @@ module.exports = function(Account) {
     options = options || {};
     var userModel = this.constructor;
     ttl = Math.min(ttl || userModel.settings.ttl, userModel.settings.maxTTL);
+    console.log(Date.now());
 		var token = jwt.encode({
 		  email: user.email,
 			company: user.companyId,
-			duty: user.dutyId
+			duty: user.dutyId,
+      createdAt: Date.now()
 		}, app.get('jwtTokenSecret'));
     this.accessTokens.create({
 			id: token,
       ttl: ttl
     }, cb);
-
-		var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
-		console.log(decoded);
     return cb.promise;
   };
 
