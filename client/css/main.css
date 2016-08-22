@@ -78,6 +78,17 @@ p {
 .form-control {
         background-color: rgba(255, 255, 255, 0);
 }
+
+.userManagement > .form-group > .form-control {
+  margin-left: 1%;
+  width: 28%;
+  float: left;
+}
+
+.userManagement > .btn {
+  margin-left: 2%;
+}
+
 /*=======================================
     HOME SECTION STYLES
 ==================================================*/
@@ -96,6 +107,11 @@ p {
     padding-bottom:15%;
     color:#fff;
 }
+
+.home > .btn {
+  margin-left: 30px;
+}
+
 .head-main {
     font-size:80px ;
     font-weight:900;

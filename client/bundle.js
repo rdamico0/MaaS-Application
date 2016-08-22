@@ -26817,9 +26817,6 @@
 	              { type: 'button', className: 'navbar-toggle', 'data-toggle': 'collapse', 'data-target': '.navbar-collapse' },
 	              _react2.default.createElement('span', { className: 'icon-bar' }),
 	              _react2.default.createElement('span', { className: 'icon-bar' }),
-	              _react2.default.createElement('span', { className: 'icon-bar' }),
-	              _react2.default.createElement('span', { className: 'icon-bar' }),
-	              _react2.default.createElement('span', { className: 'icon-bar' }),
 	              _react2.default.createElement('span', { className: 'icon-bar' })
 	            ),
 	            _react2.default.createElement(
@@ -29242,6 +29239,12 @@
 
 	var _superagent2 = _interopRequireDefault(_superagent);
 
+	var _RootAction = __webpack_require__(242);
+
+	var actions = _interopRequireWildcard(_RootAction);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function requestDeleteDSLI() {
@@ -29263,6 +29266,7 @@
 			dispatch(requestDeleteDSLI());
 			return _superagent2.default.del(api + 'companies/' + getState().loggedUser.company + '/dsls/' + dsliId + '?access_token=' + getState().loggedUser.token).then(function () {
 				dispatch(receiveDeleteDSLI(true));
+				dispatch(actions.getDSLIList());
 			}, function (error) {
 				dispatch(receiveDeleteDSLI(false, error));
 			});
@@ -30004,6 +30008,7 @@
 	          )
 	        )
 	      );
+
 	      if (this.props.user.dutyId > 2) combobox = _react2.default.createElement(
 	        'td',
 	        null,
@@ -30018,15 +30023,28 @@
 	          null,
 	          this.props.user.email
 	        ),
+	        combobox,
 	        _react2.default.createElement(
 	          'td',
 	          null,
-	          _react2.default.createElement(_MButton2.default, { label: 'X',
-	            onClick: function onClick() {
-	              store.dispatch(actions.deleteUser(_this2.props.user.id));
-	            } })
+	          'Profilo'
 	        ),
-	        combobox
+	        _react2.default.createElement(
+	          'td',
+	          null,
+	          _react2.default.createElement(
+	            'p',
+	            { 'data-placement': 'top', 'data-toggle': 'tooltip', title: 'Delete' },
+	            _react2.default.createElement(
+	              'button',
+	              { className: 'btn btn-danger btn-xs', 'data-title': 'Delete', 'data-toggle': 'modal', 'data-target': '#delete', onClick: function onClick() {
+	                  store.dispatch(actions.deleteUser(_this2.props.data.email));
+	                  store.dispatch(actions.getUserList());
+	                } },
+	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-trash' })
+	            )
+	          )
+	        )
 	      );
 	    }
 	  }]);
@@ -30152,14 +30170,6 @@
 	      var store = this.context.store;
 
 	      var admin = _react2.default.createElement('td', null);
-	      if (this.props.showPermits) admin = _react2.default.createElement(
-	        'td',
-	        null,
-	        _react2.default.createElement(_MButton2.default, { label: 'X',
-	          onClick: function onClick() {
-	            store.dispatch(actions.deleteDSLI(_this2.props.data.id));
-	          } })
-	      );
 	      return _react2.default.createElement(
 	        'tr',
 	        null,
@@ -30207,14 +30217,29 @@
 	            _react2.default.createElement(
 	              'button',
 	              { className: 'btn btn-danger btn-xs', 'data-title': 'Delete', 'data-toggle': 'modal', 'data-target': '#delete', onClick: function onClick() {
-	                  store.dispatch(actions.setDSLI(_this2.props.data));
-	                  store.dispatch(actions.redirect("/editdsli"));
+	                  store.dispatch(actions.deleteDSLI(_this2.props.data.id));
+	                  store.dispatch(actions.getDSLIList());
 	                } },
 	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-trash' })
 	            )
 	          )
 	        ),
-	        admin
+	        _react2.default.createElement(
+	          'td',
+	          null,
+	          _react2.default.createElement(
+	            'p',
+	            { 'data-placement': 'top', 'data-toggle': 'tooltip', title: 'Clone' },
+	            _react2.default.createElement(
+	              'button',
+	              { className: 'btn btn-primary btn-xs', 'data-title': 'Clone', 'data-toggle': 'modal', 'data-target': '#share', onClick: function onClick() {
+	                  store.dispatch(actions.cloneDSLI(_this2.props.data));
+	                  store.dispatch(actions.getDSLIList());
+	                } },
+	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-share' })
+	            )
+	          )
+	        )
 	      );
 	    }
 	  }]);
@@ -30337,20 +30362,33 @@
 	        _react2.default.createElement(
 	          'td',
 	          null,
-	          this.props.data.id
-	        ),
-	        _react2.default.createElement(
-	          'td',
-	          null,
 	          this.props.data.tag
 	        ),
 	        _react2.default.createElement(
 	          'td',
 	          null,
-	          _react2.default.createElement(_MButton2.default, { label: 'X',
-	            onClick: function onClick() {
-	              store.dispatch(actions.deleteData(_this2.props.data.id));
-	            } })
+	          this.props.data.id
+	        ),
+	        _react2.default.createElement(
+	          'td',
+	          null,
+	          'URI'
+	        ),
+	        _react2.default.createElement(
+	          'td',
+	          null,
+	          _react2.default.createElement(
+	            'p',
+	            { 'data-placement': 'top', 'data-toggle': 'tooltip', title: 'Delete' },
+	            _react2.default.createElement(
+	              'button',
+	              { className: 'btn btn-danger btn-xs', 'data-title': 'Delete', 'data-toggle': 'modal', 'data-target': '#delete', onClick: function onClick() {
+	                  store.dispatch(actions.deleteData(_this2.props.data.id));
+	                  store.dispatch(actions.getDatabase());
+	                } },
+	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-trash' })
+	            )
+	          )
 	        )
 	      );
 	    }
@@ -33767,6 +33805,10 @@
 
 	var _components2 = _interopRequireDefault(_components);
 
+	var _reactModal = __webpack_require__(279);
+
+	var _reactModal2 = _interopRequireDefault(_reactModal);
+
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -33779,19 +33821,52 @@
 
 	var MButton = _components2.default.MButton;
 	var MDSLIRow = _components2.default.MDSLIRow;
+	var MTextBox = _components2.default.MTextBox;
+
+
+	var customStyles = {
+	  overlay: {
+	    position: 'fixed',
+	    top: 0,
+	    left: 0,
+	    right: 0,
+	    bottom: 0
+	  },
+	  content: {
+	    position: 'absolute',
+	    top: '50%',
+	    left: '50%',
+	    right: 'none',
+	    bottom: 'none',
+	    marginRight: 'none',
+	    //background        : 'rgba(0, 0, 0, 0.5)',
+	    outline: 'none',
+	    borderRadius: 'none',
+	    transform: 'translate(-50%, -50%)',
+	    border: 'none',
+	    padding: 'none'
+	  }
+	};
 
 	var Dashboard = function (_Component) {
 	  _inherits(Dashboard, _Component);
 
-	  function Dashboard() {
+	  function Dashboard(props) {
 	    _classCallCheck(this, Dashboard);
 
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Dashboard).apply(this, arguments));
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Dashboard).call(this, props));
+
+	    _this.warn = "";
+	    _this.newDSLI = false;
+	    _this.cloneDSLI = false;
+	    return _this;
 	  }
 
 	  _createClass(Dashboard, [{
 	    key: 'render',
 	    value: function render() {
+	      var _this2 = this;
+
 	      var store = this.context.store;
 
 	      var comp = store.getState().DSLIList;
@@ -33800,21 +33875,22 @@
 	      var i = void 0;
 	      var n = comp.length;
 	      for (i = 0; i < n; i++) {
-	        body[i] = _react2.default.createElement(MDSLIRow, { data: comp[i], showPermits: false });
+	        body[i] = _react2.default.createElement(MDSLIRow, { key: comp[i].id, data: comp[i], showPermits: false });
 	      }
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: 'home' },
 	        _react2.default.createElement(
 	          'h2',
 	          null,
 	          'Welcome to Your Dashboard'
 	        ),
-	        _react2.default.createElement(MButton, { label: 'CREATE DSLI',
+	        _react2.default.createElement(MButton, { label: 'Create DSLI', className: 'btn main-btn',
 	          onClick: function onClick() {
-	            store.dispatch(actions.redirect('/newdsli'));
+	            _this2.newDSLI = true;
+	            store.dispatch(actions.refresh());
 	          } }),
-	        _react2.default.createElement(MButton, { label: 'REFRESH',
+	        _react2.default.createElement(MButton, { label: 'Refresh list', className: 'btn main-btn',
 	          onClick: function onClick() {
 	            store.dispatch(actions.getDSLIList());
 	          } }),
@@ -33828,40 +33904,112 @@
 	              'thead',
 	              null,
 	              _react2.default.createElement(
-	                'th',
+	                'tr',
 	                null,
-	                'Name'
-	              ),
-	              _react2.default.createElement(
-	                'th',
-	                null,
-	                'Last Modified'
-	              ),
-	              _react2.default.createElement(
-	                'th',
-	                null,
-	                'Id'
-	              ),
-	              _react2.default.createElement(
-	                'th',
-	                null,
-	                'Edit'
-	              ),
-	              _react2.default.createElement(
-	                'th',
-	                null,
-	                'Delete'
-	              ),
-	              _react2.default.createElement(
-	                'th',
-	                null,
-	                'Clone'
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Name'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Last Modified'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Id'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Edit'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Delete'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Clone'
+	                )
 	              )
 	            ),
 	            _react2.default.createElement(
 	              'tbody',
 	              null,
 	              body
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(
+	          _reactModal2.default,
+	          { isOpen: this.newDSLI, style: customStyles, transparent: true },
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'modal-dialog modal-sm' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'modal-content' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'modal-header' },
+	                _react2.default.createElement(
+	                  'button',
+	                  { type: 'button', className: 'close', 'data-dismiss': 'modal', onClick: function onClick() {
+	                      _this2.newDSLI = false;
+	                      store.dispatch(actions.refresh());
+	                    } },
+	                  _react2.default.createElement(
+	                    'span',
+	                    { 'aria-hidden': 'true' },
+	                    '×'
+	                  ),
+	                  _react2.default.createElement(
+	                    'span',
+	                    { className: 'sr-only' },
+	                    'Close'
+	                  )
+	                ),
+	                _react2.default.createElement(
+	                  'h4',
+	                  { className: 'modal-title' },
+	                  'Create DSLI'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'modal-body' },
+	                _react2.default.createElement(
+	                  'p',
+	                  null,
+	                  'Insert the nome of the DSLI'
+	                ),
+	                _react2.default.createElement(MTextBox, { type: 'DSLIName', name: 'DSLIName', id: 'DSLIName', className: 'form-control', placeholder: 'Name', onWrite: function onWrite(event) {
+	                    _this2.name = event.target.value;
+	                  } })
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'modal-footer' },
+	                _react2.default.createElement(
+	                  'button',
+	                  { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal', onClick: function onClick() {
+	                      _this2.newDSLI = false;
+	                      store.dispatch(actions.refresh());
+	                    } },
+	                  'Cancel'
+	                ),
+	                _react2.default.createElement(MButton, { type: 'button', className: 'btn btn-custom', label: 'Recovery', onClick: function onClick() {
+	                    store.dispatch(actions.newDSLI({ name: _this2.name, code: "Insert your DSL code here!" }));
+	                    _this2.newDSLI = false;
+	                    store.dispatch(actions.refresh());
+	                    store.dispatch(actions.getDSLIList());
+	                  } })
+	              )
 	            )
 	          )
 	        ),
@@ -33921,6 +34069,31 @@
 	var MButton = _components2.default.MButton;
 	var MUserRow = _components2.default.MUserRow;
 
+
+	var customStyles = {
+	  overlay: {
+	    position: 'fixed',
+	    top: 0,
+	    left: 0,
+	    right: 0,
+	    bottom: 0
+	  },
+	  content: {
+	    position: 'absolute',
+	    top: '50%',
+	    left: '50%',
+	    right: 'none',
+	    bottom: 'none',
+	    marginRight: 'none',
+	    //background        : 'rgba(0, 0, 0, 0.5)',
+	    outline: 'none',
+	    borderRadius: 'none',
+	    transform: 'translate(-50%, -50%)',
+	    border: 'none',
+	    padding: 'none'
+	  }
+	};
+
 	var MnUser = function (_Component) {
 	  _inherits(MnUser, _Component);
 
@@ -33951,68 +34124,118 @@
 	      }
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: 'userManagement' },
 	        _react2.default.createElement(
 	          'h2',
 	          null,
 	          'User Managment'
 	        ),
 	        _react2.default.createElement(
-	          'table',
-	          null,
+	          'div',
+	          { className: 'form-group' },
 	          _react2.default.createElement(
-	            'tbody',
-	            null,
-	            body
-	          )
+	            'label',
+	            { htmlFor: 'email', className: 'sr-only' },
+	            'Email'
+	          ),
+	          _react2.default.createElement(MTextBox, { boxType: 'text', name: 'email', id: 'email', className: 'form-control', placeholder: 'somebody@example.com', onWrite: function onWrite(event) {
+	              _this2.user = event.target.value;
+	            } })
 	        ),
-	        'EMAIL ',
-	        _react2.default.createElement(MTextBox, {
-	          boxType: 'text',
-	          onWrite: function onWrite(event) {
-	            _this2.user = event.target.value;
-	          }
-	        }),
+	        _react2.default.createElement(MButton, { label: 'Send Invite', className: 'btn main-btn',
+	          onClick: function onClick() {
+	            _this2.dialog = true;
+	            store.dispatch(actions.userRegistration({ ownerMail: _this2.user, companyName: store.getState().loggedUser.company }, 2));
+	          } }),
 	        _react2.default.createElement(
-	          'button',
-	          {
-	            type: 'button',
-	            onClick: function onClick() {
-	              //this.dialog = true
-	              store.dispatch(actions.userRegistration({ ownerMail: _this2.user, companyName: store.getState().loggedUser.company }, 2));
-	              //store.dispatch(actions.redirect('/home'))
-	            } },
-	          'SEND INVITE'
+	          'div',
+	          { className: 'table-responsive' },
+	          _react2.default.createElement(
+	            'table',
+	            { id: 'mytable', className: 'table table-bordred table-striped' },
+	            _react2.default.createElement(
+	              'thead',
+	              null,
+	              _react2.default.createElement(
+	                'tr',
+	                null,
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Mail'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Access level'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Profile'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Delete'
+	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'tbody',
+	              null,
+	              body
+	            )
+	          )
 	        ),
 	        _react2.default.createElement(
 	          _reactModal2.default,
-	          { isOpen: this.dialog },
+	          { isOpen: this.dialog, style: customStyles, transparent: true },
 	          _react2.default.createElement(
-	            'h2',
-	            null,
-	            'Do you really want to delete this useless person?'
-	          ),
-	          _react2.default.createElement(
-	            'button',
-	            {
-	              type: 'button',
-	              onClick: function onClick() {
-	                _this2.dialog = false;
-	                store.dispatch(actions.refresh());
-	                //store.dispatch(actions.redirect('/home'))
-	              } },
-	            'YES'
-	          ),
-	          _react2.default.createElement(
-	            'button',
-	            {
-	              type: 'button',
-	              onClick: function onClick() {
-	                _this2.dialog = false;
-	                store.dispatch(actions.refresh());
-	                //store.dispatch(actions.redirect('/home'))
-	              } },
-	            'NO'
+	            'div',
+	            { className: 'modal-dialog modal-sm' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'modal-content' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'modal-header' },
+	                _react2.default.createElement(
+	                  'button',
+	                  { type: 'button', className: 'close', 'data-dismiss': 'modal', onClick: function onClick() {
+	                      _this2.dialog = false;
+	                      store.dispatch(actions.refresh());
+	                    } },
+	                  _react2.default.createElement(
+	                    'span',
+	                    { 'aria-hidden': 'true' },
+	                    '×'
+	                  ),
+	                  _react2.default.createElement(
+	                    'span',
+	                    { className: 'sr-only' },
+	                    'Close'
+	                  )
+	                ),
+	                _react2.default.createElement(
+	                  'h4',
+	                  { className: 'modal-title' },
+	                  'Invite sent'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'modal-footer' },
+	                _react2.default.createElement(
+	                  'button',
+	                  { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal', onClick: function onClick() {
+	                      _this2.dialog = false;
+	                      store.dispatch(actions.refresh());
+	                    } },
+	                  'OK'
+	                )
+	              )
+	            )
 	          )
 	        ),
 	        this.warn
@@ -34105,12 +34328,54 @@
 	          'DSLI Managment'
 	        ),
 	        _react2.default.createElement(
-	          'table',
-	          null,
+	          'div',
+	          { className: 'table-responsive' },
 	          _react2.default.createElement(
-	            'tbody',
-	            null,
-	            body
+	            'table',
+	            { id: 'mytable', className: 'table table-bordred table-striped' },
+	            _react2.default.createElement(
+	              'thead',
+	              null,
+	              _react2.default.createElement(
+	                'tr',
+	                null,
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Name'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Last Modified'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Id'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Edit'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Delete'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Clone'
+	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'tbody',
+	              null,
+	              body
+	            )
 	          )
 	        ),
 	        this.warn
@@ -34169,6 +34434,32 @@
 	var MButton = _components2.default.MButton;
 	var MDataRow = _components2.default.MDataRow;
 
+
+	var customStyles = {
+	  overlay: {
+	    position: 'fixed',
+	    top: 0,
+	    left: 0,
+	    right: 0,
+	    bottom: 0
+	  },
+	  content: {
+	    position: 'absolute',
+	    top: '50%',
+	    left: '50%',
+	    width: '40%',
+	    right: 'none',
+	    bottom: 'none',
+	    marginRight: 'none',
+	    //background        : 'rgba(0, 0, 0, 0.5)',
+	    outline: 'none',
+	    borderRadius: 'none',
+	    transform: 'translate(-50%, -50%)',
+	    border: 'none',
+	    padding: 'none'
+	  }
+	};
+
 	var MnData = function (_Component) {
 	  _inherits(MnData, _Component);
 
@@ -34199,74 +34490,139 @@
 	      }
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: 'home' },
 	        _react2.default.createElement(
 	          'h2',
 	          null,
 	          'Database Managment'
 	        ),
+	        _react2.default.createElement(MButton, { label: 'Add new database', className: 'btn main-btn',
+	          onClick: function onClick() {
+	            _this2.dialog = true;
+	            store.dispatch(actions.refresh());
+	          } }),
+	        _react2.default.createElement(MButton, { label: 'Refresh list', className: 'btn main-btn',
+	          onClick: function onClick() {
+	            store.dispatch(actions.getDatabase());
+	          } }),
 	        _react2.default.createElement(
-	          'table',
-	          null,
+	          'div',
+	          { className: 'table-responsive' },
 	          _react2.default.createElement(
-	            'tbody',
-	            null,
-	            body
+	            'table',
+	            { id: 'mytable', className: 'table table-bordred table-striped' },
+	            _react2.default.createElement(
+	              'thead',
+	              null,
+	              _react2.default.createElement(
+	                'tr',
+	                null,
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Name'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Id'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'URI'
+	                ),
+	                _react2.default.createElement(
+	                  'th',
+	                  null,
+	                  'Delete'
+	                )
+	              )
+	            ),
+	            _react2.default.createElement(
+	              'tbody',
+	              null,
+	              body
+	            )
 	          )
-	        ),
-	        'NAME ',
-	        _react2.default.createElement(MTextBox, {
-	          boxType: 'text',
-	          onWrite: function onWrite(event) {
-	            _this2.name = event.target.value;
-	          }
-	        }),
-	        'URI ',
-	        _react2.default.createElement(MTextBox, {
-	          boxType: 'text',
-	          onWrite: function onWrite(event) {
-	            _this2.uri = event.target.value;
-	          }
-	        }),
-	        _react2.default.createElement(
-	          'button',
-	          {
-	            type: 'button',
-	            onClick: function onClick() {
-	              if (_this2.uri == undefined || _this2.name == undefined) _this2.warn = "Please compile all data fields";else store.dispatch(actions.addDatabase({ uri: _this2.uri, tag: _this2.name }));
-	              //store.dispatch(actions.redirect('/home'))
-	            } },
-	          'ADD DATABASE'
 	        ),
 	        _react2.default.createElement(
 	          _reactModal2.default,
-	          { isOpen: this.dialog },
+	          { isOpen: this.dialog, style: customStyles, transparent: true },
 	          _react2.default.createElement(
-	            'h2',
-	            null,
-	            'Do you really want to delete this useless person?'
-	          ),
-	          _react2.default.createElement(
-	            'button',
-	            {
-	              type: 'button',
-	              onClick: function onClick() {
-	                _this2.dialog = false;
-	                store.dispatch(actions.refresh());
-	                //store.dispatch(actions.redirect('/home'))
-	              } },
-	            'YES'
-	          ),
-	          _react2.default.createElement(
-	            'button',
-	            {
-	              type: 'button',
-	              onClick: function onClick() {
-	                _this2.dialog = false;
-	                store.dispatch(actions.refresh());
-	                //store.dispatch(actions.redirect('/home'))
-	              } },
-	            'NO'
+	            'div',
+	            { className: 'modal-dialog modal-sm' },
+	            _react2.default.createElement(
+	              'div',
+	              { className: 'modal-content' },
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'modal-header' },
+	                _react2.default.createElement(
+	                  'button',
+	                  { type: 'button', className: 'close', 'data-dismiss': 'modal', onClick: function onClick() {
+	                      _this2.dialog = false;
+	                      store.dispatch(actions.refresh());
+	                    } },
+	                  _react2.default.createElement(
+	                    'span',
+	                    { 'aria-hidden': 'true' },
+	                    '×'
+	                  ),
+	                  _react2.default.createElement(
+	                    'span',
+	                    { className: 'sr-only' },
+	                    'Close'
+	                  )
+	                ),
+	                _react2.default.createElement(
+	                  'h4',
+	                  { className: 'modal-title' },
+	                  'Add a new database connection'
+	                )
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'modal-body' },
+	                _react2.default.createElement(
+	                  'p',
+	                  null,
+	                  'Type a name for the database'
+	                ),
+	                _react2.default.createElement(MTextBox, { type: 'text', name: 'name', id: 'new-db', className: 'form-control', placeholder: 'Name', onWrite: function onWrite(event) {
+	                    _this2.name = event.target.value;
+	                  } }),
+	                _react2.default.createElement(
+	                  'p',
+	                  null,
+	                  'Type a name for the database'
+	                ),
+	                _react2.default.createElement(MTextBox, { type: 'text', name: 'uri', id: 'new-db-uri', className: 'form-control', placeholder: 'URI', onWrite: function onWrite(event) {
+	                    _this2.uri = event.target.value;
+	                  } })
+	              ),
+	              _react2.default.createElement(
+	                'div',
+	                { className: 'modal-footer' },
+	                _react2.default.createElement(
+	                  'button',
+	                  { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal', onClick: function onClick() {
+	                      _this2.dialog = false;
+	                      store.dispatch(actions.refresh());
+	                    } },
+	                  'Cancel'
+	                ),
+	                _react2.default.createElement(MButton, { type: 'button', className: 'btn btn-custom', label: 'Add', onClick: function onClick() {
+	                    if (_this2.uri == undefined || _this2.name == undefined) {
+	                      _this2.warn = "Please compile all data fields";
+	                    } else {
+	                      store.dispatch(actions.addDatabase({ uri: _this2.uri, tag: _this2.name }));
+	                    }
+	                    _this2.dialog = false;
+	                    store.dispatch(actions.refresh());
+	                  } })
+	              )
+	            )
 	          )
 	        ),
 	        this.warn
