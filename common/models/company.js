@@ -37,8 +37,8 @@ module.exports = function(Company) {
 				http: { source: 'path' }},
 			{ arg: 'fk', type: 'string', required: true,
 				http: { source: 'path' }},
-			{ arg: 'value', type: 'number', required: true,
-				http: { source: 'req' }},
+			{ arg: 'data', type: 'number', required: true,
+				http: { source: 'body' }},
 			],
       http: { path: '/:id/users/:fk/permit', verb: 'post' }
 	});
