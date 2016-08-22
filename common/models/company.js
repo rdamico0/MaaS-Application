@@ -38,7 +38,7 @@ module.exports = function(Company) {
 			{ arg: 'fk', type: 'string', required: true,
 				http: { source: 'path' }},
 			{ arg: 'value', type: 'number', required: true,
-				http: { source: 'body' }},
+				http: { source: 'req' }},
 			],
       http: { path: '/:id/users/:fk/permit', verb: 'post' }
 	});
@@ -163,7 +163,7 @@ module.exports = function(Company) {
 
 	Company.afterRemote('*.__create__users', function(context, userInstance, next) {
 		console.log('> user.afterRemote triggered');
-		
+
 		var options = {
 			type: 'email',
 			to: userInstance.email,
