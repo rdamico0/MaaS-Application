@@ -37,10 +37,10 @@ module.exports = function(Company) {
 				http: { source: 'path' }},
 			{ arg: 'fk', type: 'string', required: true,
 				http: { source: 'path' }},
-			{ arg: 'data', type: 'any', required: true,
-				http: { source: 'body' }},
+			{ arg: 'lv', type: 'number', required: true,
+				http: { source: 'path' }},
 			],
-      http: { path: '/:id/users/:fk/permit', verb: 'post' }
+      http: { path: '/:id/users/:fk/permit/:lv', verb: 'post' }
 	});
 
 // <editor-fold>  DSLI HOOKS

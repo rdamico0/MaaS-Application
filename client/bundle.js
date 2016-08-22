@@ -29643,8 +29643,7 @@
 	function setAccessLevel(user) {
 		return function (dispatch, getState, api) {
 			dispatch(requestSetAccessLevel());
-			var lvl = parseFloat(user.level);
-			return _superagent2.default.post(api + 'companies/' + getState().loggedUser.company + '/users/' + user.id + '/permit?access_token=' + getState().loggedUser.token).send(lvl).then(function () {
+			return _superagent2.default.post(api + 'companies/' + getState().loggedUser.company + '/users/' + user.id + '/permit/' + user.level + '?access_token=' + getState().loggedUser.token).then(function () {
 				dispatch(receiveSetAccessLevel(true, '')); //il reducer deve modificare state.currentDSLI.DSLI
 			}, function (err) {
 				dispatch(receiveSetAccessLevel(false, err));
