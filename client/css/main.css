@@ -1,94 +1,416 @@
+﻿
+/*=============================================================
+    Authour URI: www.binarytheme.com
+    License: Commons Attribution 3.0
+
+    http://creativecommons.org/licenses/by/3.0/
+
+    100% To use For Personal And Commercial Use.
+    IN EXCHANGE JUST GIVE US CREDITS AND TELL YOUR FRIENDS ABOUT US
+
+    ========================================================  */
 
 
-html, body{
-    font-family: helvetica, arial, sans-serif;
-    margin: 0;
-    padding: 0;
+/*=======================================
+    GENERAL STYLES
+==================================================*/
+
+html, body {
+    font-family:'Open Sans', sans-serif;
+    font-size:14px;
+    background-image:url(../img/sativa.png);
 }
 
-#bodyImage{
-    /*background-image: url(../Immagini/background.jpg);*/
-    background-repeat: no-repeat;
-    background-size: cover;
-    padding-bottom: 100px;
+h1, h2, h3, h4, h5, h6 {
+    font-family:'Open Sans', sans-serif;
 }
 
-#wrapper {
-	min-height:100%;
-	position:relative;
-    margin-left: auto;
-    margin-right: auto;
+h1 {
+    line-height:50px;
+    font-weight:900;
+    font-size:40px;
+    text-transform:uppercase;
+    color:rgba(0, 121, 138, 1);
 }
 
-/*Header*/
 
-#header{
-    color: white;
-    background-color: black;
-    border-color: black;
-    padding: 20px;
+.pad-adjust {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.text-center {
+    text-align:center;
+}
+
+h2 {
+    line-height:50px;
+}
+h3 {
+    line-height:30px;
+    padding-bottom:20px;
+}
+h4 {
+  padding-top: 25px;
+  line-height: 40px;
+  padding-bottom: 0px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+p {
+    font-weight:300;
+    line-height:30px;
+}
+
+.space-free {
+    height:100px;
+}
+
+.g-pad-bottom {
+    padding-bottom:40px;
+}
+
+.c-blue {
+   background-color:rgba(0, 121, 138, 1);
+   color:#fff;
+}
+.form-control {
+        background-color: rgba(255, 255, 255, 0);
+}
+/*=======================================
+    HOME SECTION STYLES
+==================================================*/
+
+
+.head-btn-one {
+    background-color: rgba(252, 64, 101, 1);
+     border: 0px solid #fff;
+
+}
+#home-sec {
+    background-color:rgba(0, 121, 138, 1);
+}
+#home {
+    padding-top:15%;
+    padding-bottom:15%;
+    color:#fff;
+}
+.head-main {
+    font-size:80px ;
+    font-weight:900;
+}
+.head-sub-main {
+    font-size:40px ;
+    font-weight:600;
+    padding:5px 20px 10px 20px;
+}
+.head-last {
+    font-size:20px ;
+    font-weight:300;
+    padding:5px 20px 20px 20px;
+}
+
+.btn-lg, .btn-group-lg > .btn {
+border-radius: 0px;
+
+}
+/* ===========================================================
+   NAVBAR CHANGES
+   ============================================================*/
+.navbar {
+	font-size: 14px;
+}
+
+.navbar-inverse {
+	background: #000000;
 
 }
 
-#headerText a:link{
-    color: white;
-    text-decoration: none;
-    padding: 5px;
+.navbar-inverse .navbar-nav > .active > a {
+	background: #ffffff;
 }
 
-#headerText{
-    float: right;
-    background-color: black;
-    font-size: 25px;
+.navbar-inverse .navbar-brand {
+	color: #ffffff;
+	font-weight: bolder;
+	font-size: 25px;
+    font-weight:900;
+	letter-spacing: 2px;
+}
+.navbar-inverse :hover .navbar-brand:hover {
+	color: #ffffff;
+}
+.navbar-inverse .navbar-nav > li > a {
+color: #FFFFFF;
 }
 
-#menu{
-    display: none;
-}
-#SignUpNow{
-    float:right;
-    padding-left: 5px;
-    border-color: black;
-
+.MaaSlogo{
+  padding: 5%;
+  float: left;
+  width: 100px; height: auto;
 }
 
-/*Body*/
+/*=======================================
+    PRICE SECTION STYLES
+==================================================*/
 
-#body{
-    min-height: 100%;
-    height: 100%;
-    padding-bottom: 350px;
-    padding-top: 20px;
-}
-
-#MaaSImage{
-    float: right;
-    width: 400px;
-    height: 100%;
-}
-
-#BackgroundImage{
+.plan {
+    background: #D8D8D8;
+    padding: 0 0 15px 0;
+    margin: 30px 0px;
+    list-style: none;
+    text-align: center;
 
 }
 
-/*Footer*/
 
+
+.plan li {
+   padding: 25px 0px;
+color: #858585;
+font-size: 25px;
+}
+
+.plan li.plan-head {
+    background-color:#000!important;
+   padding: 15px 0px;
+color: #FFFFFF;
+line-height: 20px;
+font-size: 20px;
+font-weight: 600;
+border: none;
+   }
+
+.plan li.main-price {
+   padding: 25px 0px;
+background-color:rgba(31, 138, 99, 1);
+color: #fff;
+border: none;
+font-weight: 900;
+font-size: 45px;
+}
+
+
+/*=======================================
+    SERVICE SECTION STYLES
+==================================================*/
+#services-inner {
+    padding-top:50px;
+    padding-bottom:40px;
+}
+
+.service-div {
+	width: 100%;
+	min-height: 100px;
+	background-color: rgba(0, 121, 138, 1);
+	box-shadow: none;
+	border: 0;
+    padding:20px;
+    margin-bottom:30px;
+    color:#fff;
+    font-size:16px;
+    padding-top: 45px;
+}
+.service-div > i {
+    color:#fff;
+}
+
+/*=======================================
+    STATS SECTION STYLES
+==================================================*/
+.stats-div {
+    text-align:center;
+    width: 100%;
+    min-height: 100px;
+    padding: 30px 20px 30px 20px;
+}
+
+.stats-div > h3 {
+    font-size:60px;
+    font-weight:900;
+}
+
+
+
+/*    --------------------------------------------------
+	:: Login Section
+	-------------------------------------------------- */
+#login {
+  padding-top: 4%;
+  padding-bottom: 4%;
+}
+#login .form-wrap {
+    width: 35%;
+    margin: 0 auto;
+}
+#login h1 {
+    color: #1fa67b;
+    font-size: 16px;
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 20px;
+    text-transform: none;
+}
+#login .form-group {
+    margin-bottom: 25px;
+}
+#login .checkbox {
+    margin-bottom: 20px;
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+#login .checkbox.show:before {
+    content: '\e013';
+    color: #1fa67b;
+    font-size: 17px;
+    margin: 1px 0 0 3px;
+    position: absolute;
+    pointer-events: none;
+    font-family: 'Glyphicons Halflings';
+}
+#login .checkbox .character-checkbox {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+    display: inline-block;
+}
+#login .checkbox .label {
+    color: #6d6d6d;
+    font-size: 13px;
+    font-weight: normal;
+}
+#login .btn.btn-custom {
+    font-size: 14px;
+	margin-bottom: 20px;
+}
+#login .forget {
+  font-size: 13px;
+	text-align: center;
+	display: block;
+}
+
+/*    --------------------------------------------------
+	:: Login Section
+	-------------------------------------------------- */
+#signin {
+  padding-top: 4%;
+  padding-bottom: 4%;
+}
+#signin .form-wrap {
+    width: 35%;
+    margin: 0 auto;
+}
+#signin h1 {
+    color: #1fa67b;
+    font-size: 20px;
+    text-align: center;
+    font-weight: bold;
+    padding-bottom: 20px;
+    text-transform: none;
+}
+#signin .form-group {
+    margin-bottom: 25px;
+}
+#signin .checkbox {
+    margin-bottom: 20px;
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+#signin .checkbox.show:before {
+    content: '\e013';
+    color: #1fa67b;
+    font-size: 17px;
+    margin: 1px 0 0 3px;
+    position: absolute;
+    pointer-events: none;
+    font-family: 'Glyphicons Halflings';
+}
+#signin .checkbox .character-checkbox {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    vertical-align: middle;
+    display: inline-block;
+}
+#signin .checkbox .label {
+    color: #6d6d6d;
+    font-size: 13px;
+    font-weight: normal;
+}
+#signin .btn.btn-custom {
+    font-size: 14px;
+	margin-bottom: 20px;
+}
+#signin .forget {
+  font-size: 13px;
+	text-align: center;
+	display: block;
+}
+
+
+/*    --------------------------------------------------
+	:: Inputs & Buttons
+	-------------------------------------------------- */
+.form-control {
+    color: #212121;
+}
+.btn-custom {
+    color: #fff;
+	background-color: #1fa67b;
+}
+.btn-custom:hover,
+.btn-custom:focus {
+    color: #fff;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
 #footer {
-    color: white;
-	background: black;
-	width:100%;
-	height:30px;
-	position:absolute;
-	bottom:0;
-	left:0;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 8%;
+  background-color:#000;
+  color:#fff;
+  text-align:right;
 }
 
-#MaaSlogo , #SIGNUP{
-    height:30px;
-}
+/*    --------------------------------------------------
+	:: Contact Support
+	-------------------------------------------------- */
 
-#superadminaccess{
-    float:right;
-    color: white;
-    text-decoration: none;
+.contact-form{ margin-top:15px;}
+.contact-form .textarea{ min-height:220px; resize:none;}
+.contact-title{ text-transform: none; text-align: center; padding-bottom: 7%;}
+.form-control{ box-shadow:none; border-color:#eee; height:49px;}
+.form-control:focus{ box-shadow:none; border-color:#00b09c;}
+.form-control-feedback{ line-height:50px;}
+.main-btn{ background:#00b09c; border-color:#00b09c; color:#fff;}
+.main-btn:hover{ background:#00a491;color:#fff;}
+.form-control-feedback {
+line-height: 50px;
+top: 0px;
 }

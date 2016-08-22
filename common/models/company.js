@@ -22,6 +22,27 @@ module.exports = function(Company) {
 '__findById__users', '__destroyById__users', '__updateById__users', '__get__users', '__create__users'];
 	ut.disableAllMethodsBut(Company, mte);
 
+  Company.accessLevels = function(company, userId, al, cb){
+		console.log("CODE HERE");
+		var Accounts = app.models.Account;
+		Accounts.findById(userId, function (err, instance) {
+			instance.updateAttribute('dutyId',al,cb())
+		});
+		cb()
+	};
+
+  Company.remoteMethod('accessLevels',{
+		accepts: [
+			{ arg: 'id', type: 'string', required: true,
+				http: { source: 'path' }},
+			{ arg: 'fk', type: 'string', required: true,
+				http: { source: 'path' }},
+			{ arg: 'value', type: 'number', required: true,
+				http: { source: 'body' }},
+			],
+      http: { path: '/:id/users/:fk/permit', verb: 'post' }
+	});
+
 // <editor-fold>  DSLI HOOKS
 
 	Company.beforeRemote('*.__create__dsls', function(context, whatever, next) {
@@ -142,7 +163,7 @@ module.exports = function(Company) {
 
 	Company.afterRemote('*.__create__users', function(context, userInstance, next) {
 		console.log('> user.afterRemote triggered');
-
+		
 		var options = {
 			type: 'email',
 			to: userInstance.email,
@@ -157,8 +178,41 @@ module.exports = function(Company) {
 				console.log('> verification email sent:', response);
 					next();
 		});
+		next();
 	});
 
+	Company.beforeRemote('*.__create__users', function(context, whatever, next) {
+		console.log(context);
+		if(context.args.data.dutyId < 1 || context.args.data.dutyId > 3){
+			var invdt = new Error();
+			invdt.status = 422;
+			invdt.message = 'Level Access Must be 1, 2 or 3';
+			invdt.code = 'UNPROCESSABLE_ENTITY';
+			next(invdt);
+		}
+		else if(context.args.data.emailVerified){
+			var invdt = new Error();
+			invdt.status = 422;
+			invdt.message = 'Cant set Email Verified to true!';
+			invdt.code = 'UNPROCESSABLE_ENTITY';
+			next(invdt);
+		}
+		else if(context.args.data.dutyId == 3){
+			Company.findById(context.ctorArgs.id, function (err, instance) {
+				if(instance.accountId != context.args.data.id){
+					var cntdl = new Error();
+					cntdl.status = 422;
+					cntdl.message = 'Owner not Matching';
+					cntdl.code = 'UNPROCESSABLE_ENTITY';
+					next(cntdl);
+				}
+				else
+					next();
+			});
+		}
+		else
+			next();
+	});
 
 	Company.beforeRemote('*.__get__users', function(context, whatever, next) {
 		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
@@ -170,14 +224,33 @@ module.exports = function(Company) {
 			next();
 	});
 
-	Company.beforeRemote('*.__updateById__users', function(context, whatever, next) {
+	Company.beforeRemote('accessLevels', function(context, whatever, next) {
 		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
-		if(user.company != context.ctorArgs.id)
+		if(user.company != context.args.id)
 			next(wrcon);
-		else if(user.duty < 3)
+		else if(user.duty < 2)
 			next(inper);
-		else
-			next();
+		else if(context.args.value < 1 || context.args.value > 2){
+			var invdt = new Error();
+			invdt.status = 422;
+			invdt.message = 'Level Access Must be 1 or 2';
+			invdt.code = 'UNPROCESSABLE_ENTITY';
+			next(invdt);
+		}
+		else{
+			var Accounts = app.models.Account;
+			Accounts.findById(context.args.fk, function (err, instance) {
+				if(instance.duty > 2){
+					var cntdl = new Error();
+					cntdl.status = 401;
+					cntdl.message = 'Cant change level 3 users';
+					cntdl.code = 'AUTHORIZATION_REQUIRED';
+					next(cntdl);
+				}
+				else
+					next();
+			});
+		}
 	});
 
 	Company.beforeRemote('*.__destroyById__users', function(context, whatever, next) {
@@ -186,8 +259,8 @@ module.exports = function(Company) {
 			next(wrcon);
 		else if(user.duty < 2)
 			next(inper);
-	else{
-		var Accounts = app.models.Account;
+		else{
+			var Accounts = app.models.Account;
 			Accounts.findById(context.args.fk, function (err, instance) {
 				if(instance.duty > 2){
 					var cntdl = new Error();

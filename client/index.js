@@ -20,20 +20,23 @@ import MnUser from './modules/containers/UserManagement'
 import MnDSLI from './modules/containers/DSLIManagement'
 import MnData from './modules/containers/DataManagement'
 import Provider from './modules/containers/Provider'
-
-import PageBuilder from './modules/services/PageBuilder'
 import rootReducer from './modules/reducers/RootReducer'
+import PageBuilder from './modules/services/PageBuilder'
 
 import createLogger from 'redux-logger'
-
 import thunk from 'redux-thunk'
+import {persistStore, autoRehydrate} from 'redux-persist'
+
+const api = 'https://mass-demo.herokuapp.com/api/'
 
 const goto = routerMiddleware(browserHistory)
 const logger = createLogger()
 const store = createStore(
 		rootReducer,
-		applyMiddleware(goto, logger, thunk)
+		applyMiddleware(goto, logger, thunk.withExtraArgument(api)),
+		autoRehydrate()
 )
+persistStore(store)
 
 // Create an enhanced history that syncs navigation events with the store
 const history = syncHistoryWithStore(browserHistory, store)

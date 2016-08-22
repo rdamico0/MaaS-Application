@@ -1,0 +1,47 @@
+{
+  "name": "client_maas",
+  "version": "0.0.1",
+  "description": "Client dell'applicazione MaaS",
+  "main": "index.js",
+  "dependencies": {
+    "fs": "0.0.2",
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7",
+    "react-modal": "^1.4.0",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.0.0",
+    "react-router-redux": "^4.0.4",
+    "redux": "^3.5.2",
+    "redux-logger": "^2.6.1",
+    "redux-modal": "^1.3.0",
+    "redux-persist": "^3.5.0",
+    "redux-promise-middleware": "^3.0.0",
+    "redux-thunk": "^2.1.0",
+    "superagent": "^2.0.0",
+    "sweet.js": "^2.1.0"
+  },
+  "devDependencies": {
+    "babel-core": "^6.5.1",
+    "babel-loader": "^6.2.2",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-react": "^6.5.0",
+    "http-server": "^0.8.5",
+    "webpack": "^1.12.13",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "scripts": {
+    "heroku": "webpack-dev-server --output-public-path /assets/ --content-base . --history-api-fallback",
+    "start": "webpack-dev-server --inline --content-base . --history-api-fallback"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guidou3/front-end-MaaS.git"
+  },
+  "author": "matrioska.io",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guidou3/front-end-MaaS/issues"
+  },
+  "homepage": "https://github.com/guidou3/front-end-MaaS#readme"
+}
