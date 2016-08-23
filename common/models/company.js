@@ -199,7 +199,9 @@ module.exports = function(Company) {
 		}
 		else if(context.args.data.dutyId == 3){
 			Company.findById(context.ctorArgs.id, function (err, instance) {
-				if(instance.accountId != context.args.data.id){
+				console.log(instance.ownerId);
+				console.log(context.args.data.id);
+				if(instance.ownerId != context.args.data.id){
 					var cntdl = new Error();
 					cntdl.status = 422;
 					cntdl.message = 'Owner not Matching';
