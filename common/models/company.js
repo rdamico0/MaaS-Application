@@ -178,7 +178,6 @@ module.exports = function(Company) {
 				console.log('> verification email sent:', response);
 					next();
 		});
-		next();
 	});
 
 	Company.beforeRemote('*.__create__users', function(context, whatever, next) {
