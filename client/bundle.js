@@ -30101,7 +30101,7 @@
 	            _react2.default.createElement(
 	              'button',
 	              { className: 'btn btn-danger btn-xs', 'data-title': 'Delete', 'data-toggle': 'modal', 'data-target': '#delete', onClick: function onClick() {
-	                  store.dispatch(actions.deleteUser(_this2.props.data.email));
+	                  store.dispatch(actions.deleteUser(_this2.props.user.email));
 	                  store.dispatch(actions.getUserList());
 	                } },
 	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-trash' })

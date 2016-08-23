@@ -89,6 +89,21 @@ p {
   margin-left: 2%;
 }
 
+.Editor {
+  margin-left: 4%;
+  text-align: center;
+}
+
+.Editor > .buttons > .btn{
+  margin: 1%;
+  padding-left: 3%;
+  padding-right: 3%;
+}
+
+.DSLITitle > h2 > .btn {
+  margin-left: 4%;
+}
+
 /*=======================================
     HOME SECTION STYLES
 ==================================================*/
