@@ -30550,7 +30550,7 @@
 	    value: function render() {
 	      var store = this.context.store;
 
-	      var value = store.getState().sys;
+	      var value = store.getState().status.error;
 	      return _react2.default.createElement(
 	        'p',
 	        null,
