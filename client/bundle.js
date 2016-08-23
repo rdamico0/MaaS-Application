@@ -29997,7 +29997,7 @@
 	  _createClass(MTextArea, [{
 	    key: 'render',
 	    value: function render() {
-	      return _react2.default.createElement('textarea', _extends({}, this.props, { onChange: this.props.onWrite, defaultValue: this.props.value }));
+	      return _react2.default.createElement('textarea', _extends({}, this.props, { onChange: this.props.onWrite, defaultValue: this.props.dfvalue }));
 	    }
 	  }]);
 
@@ -30066,9 +30066,9 @@
 	        _react2.default.createElement(
 	          'select',
 	          { name: 'example', defaultValue: this.props.user.dutyId, onChange: function onChange(event) {
-	              store.dispatch(actions.setAccessLevel({ id: _this2.props.user.email, level: event.target.value }).then(function () {
+	              store.dispatch(actions.setAccessLevel({ id: _this2.props.user.email, level: event.target.value })).then(function () {
 	                return store.dispatch(actions.getUserList());
-	              }));
+	              });
 	            } },
 	          _react2.default.createElement(
 	            'option',
@@ -33818,7 +33818,7 @@
 	          )
 	        ),
 	        _react2.default.createElement('p', null),
-	        _react2.default.createElement(MTextArea, { rows: '20', cols: '100', value: dsli.code,
+	        _react2.default.createElement(MTextArea, { rows: '20', cols: '100', dfvalue: dsli.code,
 	          onWrite: function onWrite(event) {
 	            dsli.code = event.target.value;
 	            console.log(dsli.code);
@@ -35092,12 +35092,6 @@
 			case 'getDatabase':
 				console.log(action);
 				return action.listData;
-			case 'deleteData':
-				{
-					var temp = Object.assign({}, state);
-					temp.splice(array.indexOf(action.id), 1);
-					return temp;
-				}
 			case 'logout':
 				return 0;
 			default:

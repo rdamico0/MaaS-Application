@@ -181,7 +181,6 @@ module.exports = function(Company) {
 	});
 
 	Company.beforeRemote('*.__create__users', function(context, whatever, next) {
-		console.log(context);
 		if(context.args.data.dutyId < 1 || context.args.data.dutyId > 3){
 			var invdt = new Error();
 			invdt.status = 422;
@@ -198,8 +197,6 @@ module.exports = function(Company) {
 		}
 		else if(context.args.data.dutyId == 3){
 			Company.findById(context.ctorArgs.id, function (err, instance) {
-				console.log(instance.ownerId);
-				console.log(context.args.data.id);
 				if(instance.ownerId != context.args.data.id){
 					var cntdl = new Error();
 					cntdl.status = 422;
@@ -241,7 +238,7 @@ module.exports = function(Company) {
 		else{
 			var Accounts = app.models.Account;
 			Accounts.findById(context.args.fk, function (err, instance) {
-				if(instance.duty > 2){
+				if(instance.dutyId > 2){
 					var cntdl = new Error();
 					cntdl.status = 401;
 					cntdl.message = 'Cant change level 3 users';
@@ -263,7 +260,7 @@ module.exports = function(Company) {
 		else{
 			var Accounts = app.models.Account;
 			Accounts.findById(context.args.fk, function (err, instance) {
-				if(instance.duty > 2){
+				if(instance.dutyId > 2){
 					var cntdl = new Error();
 					cntdl.status = 401;
 					cntdl.message = 'Cant delete level 3 users';
