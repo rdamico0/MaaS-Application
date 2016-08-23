@@ -27048,19 +27048,19 @@
 
 	var _cloneDSLI = __webpack_require__(252);
 
-	var _companyRegistration = __webpack_require__(254);
+	var _companyRegistration = __webpack_require__(255);
 
-	var _deleteDSLI = __webpack_require__(256);
+	var _deleteDSLI = __webpack_require__(257);
 
-	var _deleteUser = __webpack_require__(257);
+	var _deleteUser = __webpack_require__(258);
 
-	var _deleteData = __webpack_require__(258);
+	var _deleteData = __webpack_require__(259);
 
-	var _embodyUser = __webpack_require__(259);
+	var _embodyUser = __webpack_require__(260);
 
-	var _getDSLI = __webpack_require__(260);
+	var _getDSLI = __webpack_require__(261);
 
-	var _getDSLIList = __webpack_require__(261);
+	var _getDSLIList = __webpack_require__(254);
 
 	var _getUserList = __webpack_require__(262);
 
@@ -27078,7 +27078,7 @@
 
 	var _addDatabase = __webpack_require__(268);
 
-	var _userRegistration = __webpack_require__(255);
+	var _userRegistration = __webpack_require__(256);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28955,7 +28955,7 @@
 /* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 		value: true
@@ -28964,10 +28964,14 @@
 
 	var _newDSLI = __webpack_require__(253);
 
+	var _getDSLIList = __webpack_require__(254);
+
 	function cloneDSLI(dsli) {
 		return function (dispatch) {
-			dsli.name = "Clone of " + dsli.name;
-			dispatch((0, _newDSLI.newDSLI)(dsli));
+			var n = Object.assign({}, dsli, { name: "Clone of " + dsli.name });
+			dispatch((0, _newDSLI.newDSLI)(n)).then(function () {
+				return dispatch((0, _getDSLIList.getDSLIList)());
+			});
 		};
 		/*
 	 export function requestCloneDSLI() {
@@ -29057,9 +29061,7 @@
 				public: true,
 				permits: 3
 			}).then(function (result) {
-				dispatch(receiveNewDSLI(true, result)).then(function () {
-					return dispatch((0, _reactRouterRedux.push)('/home'));
-				});
+				dispatch(receiveNewDSLI(true, result));
 			}, function (error) {
 				dispatch(receiveNewDSLI(false, error));
 			});
@@ -29068,6 +29070,52 @@
 
 /***/ },
 /* 254 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+	exports.getDSLIList = getDSLIList;
+
+	var _superagent = __webpack_require__(243);
+
+	var _superagent2 = _interopRequireDefault(_superagent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function requestDSLIList() {
+		return {
+			type: 'waiting',
+			operation: 'getDSLIList'
+		};
+	}
+
+	function receiveDSLIList(bool, data) {
+		if (bool) return {
+			type: 'getDSLIList',
+			listDSLI: data //lista
+		};else return {
+			type: 'error',
+			error: data
+		};
+	}
+
+	function getDSLIList() {
+		return function (dispatch, getState, api) {
+			dispatch(requestDSLIList());
+			return _superagent2.default.get(api + 'companies/' + getState().loggedUser.company + '/dsls?access_token=' + getState().loggedUser.token).then(function (result) {
+				var res = JSON.parse(result.text);
+				dispatch(receiveDSLIList(true, res));
+			}, function (error) {
+				dispatch(receiveDSLIList(false, error));
+			});
+		};
+	}
+
+/***/ },
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29084,7 +29132,7 @@
 
 	var _reactRouterRedux = __webpack_require__(236);
 
-	var _userRegistration = __webpack_require__(255);
+	var _userRegistration = __webpack_require__(256);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29151,7 +29199,7 @@
 	}
 
 /***/ },
-/* 255 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29233,7 +29281,7 @@
 	}
 
 /***/ },
-/* 256 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29282,8 +29330,8 @@
 	}
 
 /***/ },
-/* 257 */
-/***/ function(module, exports) {
+/* 258 */
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -29293,6 +29341,13 @@
 	exports.requestDeleteUser = requestDeleteUser;
 	exports.receiveDeleteUser = receiveDeleteUser;
 	exports.deleteUser = deleteUser;
+
+	var _superagent = __webpack_require__(243);
+
+	var _superagent2 = _interopRequireDefault(_superagent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 	function requestDeleteUser() {
 		return {
 			type: 'waiting',
@@ -29307,10 +29362,10 @@
 		};
 	}
 
-	function deleteUser() {
-		return function (dispatch) {
+	function deleteUser(email) {
+		return function (dispatch, getState, api) {
 			dispatch(requestDeleteUser());
-			return request.del(url).then(function () {
+			return _superagent2.default.del(api + 'companies/' + getState().loggedUser.company + '/users/' + email + '?access_token=' + getState().loggedUser.token).then(function () {
 				dispatch(receiveDeleteUser(true));
 			}, function (error) {
 				dispatch(receiveDeleteUser(false, error));
@@ -29319,7 +29374,7 @@
 	}
 
 /***/ },
-/* 258 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29364,7 +29419,7 @@
 	}
 
 /***/ },
-/* 259 */
+/* 260 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -29421,7 +29476,7 @@
 	}
 
 /***/ },
-/* 260 */
+/* 261 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -29454,52 +29509,6 @@
 				dispatch(receiveDSLI(true, result));
 			}, function (error) {
 				dispatch(receiveDSLI(false, error));
-			});
-		};
-	}
-
-/***/ },
-/* 261 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-		value: true
-	});
-	exports.getDSLIList = getDSLIList;
-
-	var _superagent = __webpack_require__(243);
-
-	var _superagent2 = _interopRequireDefault(_superagent);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function requestDSLIList() {
-		return {
-			type: 'waiting',
-			operation: 'getDSLIList'
-		};
-	}
-
-	function receiveDSLIList(bool, data) {
-		if (bool) return {
-			type: 'getDSLIList',
-			listDSLI: data //lista
-		};else return {
-			type: 'error',
-			error: data
-		};
-	}
-
-	function getDSLIList() {
-		return function (dispatch, getState, api) {
-			dispatch(requestDSLIList());
-			return _superagent2.default.get(api + 'companies/' + getState().loggedUser.company + '/dsls?access_token=' + getState().loggedUser.token).then(function (result) {
-				var res = JSON.parse(result.text);
-				dispatch(receiveDSLIList(true, res));
-			}, function (error) {
-				dispatch(receiveDSLIList(false, error));
 			});
 		};
 	}
@@ -29568,7 +29577,7 @@
 
 	var _reactRouterRedux = __webpack_require__(236);
 
-	var _getDSLIList = __webpack_require__(261);
+	var _getDSLIList = __webpack_require__(254);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30057,17 +30066,19 @@
 	        _react2.default.createElement(
 	          'select',
 	          { name: 'example', defaultValue: this.props.user.dutyId, onChange: function onChange(event) {
-	              store.dispatch(actions.setAccessLevel({ id: _this2.props.user.email, level: event.target.value }));
+	              store.dispatch(actions.setAccessLevel({ id: _this2.props.user.email, level: event.target.value }).then(function () {
+	                return store.dispatch(actions.getUserList());
+	              }));
 	            } },
 	          _react2.default.createElement(
 	            'option',
 	            { value: '1' },
-	            this.props.user.dutyId == 1 ? "Member ♥" : "Member"
+	            this.props.user.dutyId == 1 ? 'Member ✓' : "Member"
 	          ),
 	          _react2.default.createElement(
 	            'option',
 	            { value: '2' },
-	            this.props.user.dutyId == 2 ? "Admin ♥" : "Admin"
+	            this.props.user.dutyId == 2 ? 'Admin ✓' : "Admin"
 	          )
 	        )
 	      );
@@ -30101,8 +30112,9 @@
 	            _react2.default.createElement(
 	              'button',
 	              { className: 'btn btn-danger btn-xs', 'data-title': 'Delete', 'data-toggle': 'modal', 'data-target': '#delete', onClick: function onClick() {
-	                  store.dispatch(actions.deleteUser(_this2.props.user.email));
-	                  store.dispatch(actions.getUserList());
+	                  store.dispatch(actions.deleteUser(_this2.props.user.email)).then(function () {
+	                    return store.dispatch(actions.getUserList());
+	                  });
 	                } },
 	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-trash' })
 	            )
@@ -30280,8 +30292,9 @@
 	            _react2.default.createElement(
 	              'button',
 	              { className: 'btn btn-danger btn-xs', 'data-title': 'Delete', 'data-toggle': 'modal', 'data-target': '#delete', onClick: function onClick() {
-	                  store.dispatch(actions.deleteDSLI(_this2.props.data.id));
-	                  store.dispatch(actions.getDSLIList());
+	                  store.dispatch(actions.deleteDSLI(_this2.props.data.id)).then(function () {
+	                    return store.dispatch(actions.getDSLIList());
+	                  });
 	                } },
 	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-trash' })
 	            )
@@ -30297,7 +30310,6 @@
 	              'button',
 	              { className: 'btn btn-primary btn-xs', 'data-title': 'Clone', 'data-toggle': 'modal', 'data-target': '#share', onClick: function onClick() {
 	                  store.dispatch(actions.cloneDSLI(_this2.props.data));
-	                  store.dispatch(actions.getDSLIList());
 	                } },
 	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-share' })
 	            )
@@ -30441,8 +30453,9 @@
 	            _react2.default.createElement(
 	              'button',
 	              { className: 'btn btn-danger btn-xs', 'data-title': 'Delete', 'data-toggle': 'modal', 'data-target': '#delete', onClick: function onClick() {
-	                  store.dispatch(actions.deleteData(_this2.props.data.id));
-	                  store.dispatch(actions.getDatabase());
+	                  store.dispatch(actions.deleteData(_this2.props.data.id)).then(function () {
+	                    return store.dispatch(actions.getDatabase());
+	                  });
 	                } },
 	              _react2.default.createElement('span', { className: 'glyphicon glyphicon-trash' })
 	            )
@@ -33815,11 +33828,17 @@
 	          { className: 'buttons' },
 	          _react2.default.createElement(MButton, { label: 'Save', className: 'btn main-btn',
 	            onClick: function onClick() {
-	              store.dispatch(actions.saveTextDSLI(dsli));
+	              store.dispatch(actions.saveTextDSLI(dsli)).then(function () {
+	                return store.dispatch(actions.getDSLIList());
+	              });
 	            } }),
 	          _react2.default.createElement(MButton, { label: 'Delete', className: 'btn main-btn',
 	            onClick: function onClick() {
-	              store.dispatch(actions.deleteDSLI(dsli.id));
+	              store.dispatch(actions.deleteDSLI(dsli.id)).then(function () {
+	                return store.dispatch(actions.getDSLIList());
+	              }).then(function () {
+	                return store.dispatch(actions.redirect('/home'));
+	              });
 	            } }),
 	          _react2.default.createElement(MButton, { label: 'Clone', className: 'btn main-btn',
 	            onClick: function onClick() {
@@ -34017,10 +34036,6 @@
 	            _this2.newDSLI = true;
 	            store.dispatch(actions.refresh());
 	          } }),
-	        _react2.default.createElement(MButton, { label: 'Refresh list', className: 'btn main-btn',
-	          onClick: function onClick() {
-	            store.dispatch(actions.getDSLIList());
-	          } }),
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'table-responsive' },
@@ -34131,10 +34146,11 @@
 	                  'Cancel'
 	                ),
 	                _react2.default.createElement(MButton, { type: 'button', className: 'btn btn-custom', label: 'Create', onClick: function onClick() {
-	                    store.dispatch(actions.newDSLI({ name: _this2.name, code: "Insert your DSL code here!" }));
+	                    store.dispatch(actions.newDSLI({ name: _this2.name, code: "Insert your DSL code here!" })).then(function () {
+	                      return store.dispatch(actions.getDSLIList());
+	                    });
 	                    _this2.newDSLI = false;
 	                    store.dispatch(actions.refresh());
-	                    store.dispatch(actions.getDSLIList());
 	                  } })
 	              )
 	            )
@@ -34272,7 +34288,9 @@
 	        _react2.default.createElement(MButton, { label: 'Send Invite', className: 'btn main-btn',
 	          onClick: function onClick() {
 	            _this2.dialog = true;
-	            store.dispatch(actions.userRegistration({ ownerMail: _this2.user, companyName: store.getState().loggedUser.company }, 2));
+	            store.dispatch(actions.userRegistration({ ownerMail: _this2.user, companyName: store.getState().loggedUser.company }, 2)).then(function () {
+	              return store.dispatch(actions.getUserList());
+	            });
 	          } }),
 	        _react2.default.createElement(
 	          'div',
@@ -34738,7 +34756,9 @@
 	                    if (_this2.uri == undefined || _this2.name == undefined) {
 	                      _this2.warn = "Please compile all data fields";
 	                    } else {
-	                      store.dispatch(actions.addDatabase({ uri: _this2.uri, tag: _this2.name }));
+	                      store.dispatch(actions.addDatabase({ uri: _this2.uri, tag: _this2.name })).then(function () {
+	                        return store.dispatch(actions.getDatabase());
+	                      });
 	                    }
 	                    _this2.dialog = false;
 	                    store.dispatch(actions.refresh());
@@ -34988,43 +35008,47 @@
 			case 'getDSLIList':
 				console.log(action);
 				return action.listDSLI;
-			case 'renameDSLI':
-				{
-					var temp = Object.assign({}, state);
-					for (var i = 0; i < temp.length; i++) {
-						if (temp[i].name === action.oldName) temp[i].name = action.newName;
-					}return temp;
-				}
-			case 'newDSLI':
-				{
-					var temp = Object.assign({}, state);
-					temp.push({
-						id: action.DSLI.id,
-						name: action.DSLI.name,
-						permit: action.DSLI.permit //da rivedere -> dovrebbe essere sempre quello per quelli creati
-					});
-				}
-			case 'cloneDSLI':
-				{
-					var temp = Object.assign({}, state);
-					temp.push({
-						id: action.DSLI.id,
-						name: action.DSLI.name,
-						permit: action.DSLI.permit //da rivedere -> dovrebbe essere sempre quello per quelli creati
-					});
-				}
-			case 'deleteDSLI':
-				{
-					var temp = Object.assign({}, state);
-					temp.splice(array.indexOf(action.DSLI.id), 1);
-					return temp;
-				}
 			case 'logout':
 				return 0;
 			default:
 				return state;
 		}
 	}
+
+	/*
+	case 'renameDSLI':
+	{
+	var temp = Object.assign({}, state)
+	for (var i=0; i < temp.length; i++)
+		if (temp[i].name === action.oldName)
+			temp[i].name = action.newName
+	return temp
+	}
+	case 'newDSLI':
+	{
+	var temp = Object.assign({}, state)
+	temp.push({
+		id: action.DSLI.id,
+		name: action.DSLI.name,
+		permit: action.DSLI.permit //da rivedere -> dovrebbe essere sempre quello per quelli creati
+	})
+	}
+	case 'cloneDSLI':
+	{
+	var temp = Object.assign({}, state)
+	temp.push({
+		id: action.DSLI.id,
+		name: action.DSLI.name,
+		permit: action.DSLI.permit //da rivedere -> dovrebbe essere sempre quello per quelli creati
+	})
+	}
+	case 'deleteDSLI':
+	{
+	var temp = Object.assign({}, state)
+	temp.splice(array.indexOf(action.DSLI.id), 1);
+	return temp
+	}
+	*/
 
 /***/ },
 /* 316 */
@@ -35096,14 +35120,7 @@
 		var action = arguments[1];
 
 		switch (action.type) {
-			case 'renameDSLI':
-				return Object.assign({}, state, {
-					name: action.newName
-				});
-			case 'saveTextDSLI':
-				return Object.assign({}, state, {
-					code: action.newText
-				});
+
 			case 'setDSLI':
 				return {
 					id: action.dsli.id,
@@ -35123,26 +35140,37 @@
 				return Object.assign({}, state, {
 					result: action.result
 				});
-			case 'newDSLI':
-				return {
-					id: action.DSLI.id, // o faccio una query per ottenere l'id oppure uso getDSLI
-					name: action.DSLI.name,
-					code: action.DSLI.code,
-					permit: action.DSLI.permit
-				};
-			case 'cloneDSLI':
-				return {
-					id: action.DSLI.id,
-					name: action.DSLI.name,
-					code: action.DSLI.code,
-					permit: action.DSLI.permit
-				};
+
 			case 'logout':
 				return 0;
 			default:
 				return state;
 		}
 	}
+
+	/*case 'newDSLI':
+		return {
+			id: action.DSLI.id, // o faccio una query per ottenere l'id oppure uso getDSLI
+			name: action.DSLI.name,
+			code: action.DSLI.code,
+			permit: action.DSLI.permit
+		}
+	case 'cloneDSLI':
+		return {
+			id: action.DSLI.id,
+			name: action.DSLI.name,
+			code: action.DSLI.code,
+			permit: action.DSLI.permit
+		}*/
+
+	/*case 'renameDSLI':
+		return Object.assign({}, state, {
+				name: action.newName
+		})
+	case 'saveTextDSLI':
+		return Object.assign({}, state, {
+				code: action.newText
+		})*/
 
 /***/ },
 /* 319 */
