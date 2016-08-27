@@ -149,38 +149,38 @@ border-radius: 0px;
 /* ===========================================================
    NAVBAR CHANGES
    ============================================================*/
-.navbar {
-	font-size: 14px;
-}
+   .navbar {
+   	font-size: 14px;
+    margin-bottom: 0px;
+   }
 
-.navbar-inverse {
-	background: #000000;
 
-}
 
-.navbar-inverse .navbar-nav > .active > a {
-	background: #ffffff;
-}
+   .navbar-inverse .navbar-brand {
+   	color: #ffffff;
+   	font-weight: bolder;
+   	font-size: 25px;
+       font-weight:900;
+   	letter-spacing: 2px;
+   }
+   .navbar-inverse :hover .navbar-brand:hover {
+   	color: #ffffff;
+   }
+   .navbar-inverse .navbar-nav > li > a {
+   color: #FFFFFF;
+   }
 
-.navbar-inverse .navbar-brand {
-	color: #ffffff;
-	font-weight: bolder;
-	font-size: 25px;
-    font-weight:900;
-	letter-spacing: 2px;
-}
-.navbar-inverse :hover .navbar-brand:hover {
-	color: #ffffff;
-}
-.navbar-inverse .navbar-nav > li > a {
-color: #FFFFFF;
-}
 
-.MaaSlogo{
-  padding: 5%;
-  float: left;
-  width: 100px; height: auto;
-}
+  .navbar-brand {
+    padding: 0px;
+  }
+
+  .navbar-brand>img {
+    width: 150px;
+    height: 100%;
+    padding: 10px;
+    width: auto;
+  }
 
 /*=======================================
     PRICE SECTION STYLES

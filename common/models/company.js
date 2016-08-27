@@ -23,7 +23,6 @@ module.exports = function(Company) {
 	ut.disableAllMethodsBut(Company, mte);
 
   Company.accessLevels = function(company, userId, al, cb){
-		console.log("CODE HERE");
 		var Accounts = app.models.Account;
 		Accounts.findById(userId, function (err, instance) {
 			instance.updateAttribute('dutyId',al,cb())
@@ -49,35 +48,56 @@ module.exports = function(Company) {
 		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
 		if(user.company != context.ctorArgs.id)
 			next(wrcon);
+		if(user.duty < 2 && context.args.data.permits > 0)
+			next(inper);
 		else
 			next();
 	});
 
 	Company.beforeRemote('*.__get__dsls', function(context, whatever, next) {
 		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
+
+		context.args.filter = {where: {or: [{permits: 1}, {permits: 2}, {permits: 3}, {accountId: user.email}]}}
 		if(user.company != context.ctorArgs.id)
 			next(wrcon);
-		else
+		else if(user.duty < 2){
 			next();
+		}
+		else if(context.args.filter == "public"){
+			context.args.filter = {where: {or: [{permits: 1}, {permits: 2}, {permits: 3}]}}
+			next();
+		}
+		else if(context.args.filter == "private"){
+			context.args.filter = {where: {permits: 0}}
+			next();
+		}
+		else{
+			context.args.filter = {}
+			next();
+		}
 	});
 
 	Company.beforeRemote('*.__updateById__dsls', function(context, whatever, next) {
 		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
 		if(user.company != context.ctorArgs.id)
 			next(wrcon);
-		else if(user.duty < 2){
+		else{
 			var Dsls = app.models.DSL;
 			Dsls.findById(context.args.fk, function (err, instance) {
-				if(instance.accountId == user.email)
+				if(context.args.data.accountId)   //tried to modify writer - STOP
+					next(inper);
+				else if(context.args.data.permits && (instance.permits == 0 || user.duty < 2)) //tried to modify permits by not admin or of a private DSL
+					next(inper);
+			  else if(user.duty >= 2) //ADMIN following rules
 					next();
-				else if(instance.permits == 3)
+				else if(instance.accountId == user.email) //writer modifying his DSL
+					next();
+				else if(instance.permits > 2) //member modifying a shared DSL
 					next();
 				else
 					next(inper);
 			});
 		}
-		else
-			next();
 	});
 
 	Company.beforeRemote('*.__destroyById__dsls', function(context, whatever, next) {
@@ -99,12 +119,25 @@ module.exports = function(Company) {
 			next();
 	});
 
-	Company.beforeRemote('*.__findById__dsls', function(context, whatever, next) {
+	Company.afterRemote('*.__findById__dsls', function(context, whatever, next) {
 		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
+
 		if(user.company != context.ctorArgs.id)
 			next(wrcon);
-		else
-			next();
+		else {
+			var Dsls = app.models.DSL;
+			Dsls.findById(context.args.fk, function (err, instance) {
+				context.result.DSLcode = instance.code;
+				if(user.duty >= 2)
+					next();
+				else if(instance.accountId == user.email)
+					next();
+				else if(instance.permits > 1 )
+					next();
+				else
+					next(inper);
+			});
+		}
 	});
 
 // </editor-fold>
@@ -285,19 +318,4 @@ module.exports = function(Company) {
 
 // </editor-fold>
 
-/*
-	Company.beforeRemote('*.__get__users', function(context, whatever, next) {
-		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
-
-		if(!err)
-			next(err)
-		else{
-			var Dsls = app.models.DSL;
-			Dsls.findById(context.args.fk, function (err, instance) {
-				console.log(instance);
-				next(err);
-			});
-		}
-	});
-*/
 };
