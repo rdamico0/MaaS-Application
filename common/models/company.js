@@ -132,7 +132,7 @@ module.exports = function(Company) {
 					next();
 				else if(instance.accountId == user.email)
 					next();
-				else if(instance.permits > 1 )
+				else if(instance.permits > 0)
 					next();
 				else
 					next(inper);
