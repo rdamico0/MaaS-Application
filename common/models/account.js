@@ -39,6 +39,8 @@ var ut = require('./methodDisabling');
 
 module.exports = function(Account) {
 
+
+
   Account.prototype.createAccessToken = function(ttl, options, cb) {
 		var user = options;
     if (cb === undefined && typeof options === 'function') {
@@ -158,6 +160,18 @@ module.exports = function(Account) {
     });
     return fn.promise;
   };
+
+
+  Account.impersonate = function(email, include, next) {
+    var Accounts = app.models.Account;
+    Accounts.findById(email, function (err, instance) {
+      Accounts.login({email:email,password:instance.password}, include, function (err, instance){
+        var obj = instance;
+        next(err, instance);
+      });
+    });
+  };
+
 
   Account.logout = function(tokenId, fn) {
     fn = fn || utils.createPromiseCallback();
@@ -399,6 +413,23 @@ module.exports = function(Account) {
       }
     };
 
+    Account.helpRequest = function(sender, text, next) {
+      options = {}
+			options.type = "email";
+      options.text = sender + text;
+      options.from = sender;
+      options.to = "matrioska.io.go@gmail.com";
+      options.subject = "Support Request";
+
+      Account.app.models.Email.send(options, function(err, email) {
+        if (err) {
+          next(err);
+        } else {
+          next();
+        }
+      });
+    };
+
     // Access token to normalize email credentials
     UserModel.observe('access', function normalizeEmailCase(ctx, next) {
       if (!ctx.Model.settings.caseSensitiveEmail && ctx.query.where && ctx.query.where.email) {
@@ -458,6 +489,17 @@ module.exports = function(Account) {
     );
 
     UserModel.remoteMethod(
+      'helpRequest',
+      {
+        accepts: [
+          {arg: 'id', type: 'string', required: true, http: { source: 'path' }},
+          {arg: 'text', type: 'string', required: true}
+        ],
+        http: {verb: 'post', path: '/help/:id'}
+      }
+    );
+
+    UserModel.remoteMethod(
       'confirm',
       {
         description: 'Confirm a user registration with email verification token.',
@@ -467,6 +509,18 @@ module.exports = function(Account) {
           {arg: 'redirect', type: 'string'}
         ],
         http: {verb: 'get', path: '/confirm'}
+      }
+    );
+
+    UserModel.remoteMethod(
+      'impersonate',
+      {
+        accepts: [
+          {arg: 'id', type: 'string', required: true},
+          {arg: 'include', type: ['string'], http: {source: 'query'}}
+        ],
+        returns: {arg: 'accessToken', type: 'object', root: true},
+        http: {verb: 'post', path: '/:id/impersonate'}
       }
     );
 
@@ -492,6 +546,19 @@ module.exports = function(Account) {
       next();
     });
 
+    Account.beforeRemote('impersonate', function(context, whatever, next) {
+  		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
+  		if(user.duty != 9){
+        var inper = new Error();
+    	  inper.status = 401;
+    	  inper.message = 'Insufficient Permission';
+    	  inper.code = 'AUTHORIZATION_REQUIRED';
+  			next(inper);
+      }
+  		else
+  			next();
+  	});
+
     // default models
     assert(loopback.Email, 'Email model must be defined before User model');
     UserModel.email = loopback.Email;
@@ -516,7 +583,7 @@ module.exports = function(Account) {
 
   Account.setup();
 
-	var mte = ['login','logout','exists','confirm','resetPassword'];
+	var mte = ['login','logout','exists','confirm','resetPassword','helpRequest','impersonate'];
 	ut.disableAllMethodsBut(Account, mte);
 
 };

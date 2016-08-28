@@ -22,6 +22,8 @@ module.exports = function(Company) {
 '__findById__users', '__destroyById__users', '__updateById__users', '__get__users', '__create__users'];
 	ut.disableAllMethodsBut(Company, mte);
 
+
+
   Company.accessLevels = function(company, userId, al, cb){
 		var Accounts = app.models.Account;
 		Accounts.findById(userId, function (err, instance) {
