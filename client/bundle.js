@@ -188,7 +188,8 @@
 		_react2.default.createElement(_reactRouter.Route, { path: '/editdsli', component: _Editor2.default }),
 		_react2.default.createElement(_reactRouter.Route, { path: '/execdsli', component: _PageBuilder2.default }),
 		' /*PageBuilder  */',
-		_react2.default.createElement(_reactRouter.Route, { path: '/profile/changepwd', component: _ResetPassword2.default })
+		_react2.default.createElement(_reactRouter.Route, { path: '/profile/changepwd', component: _ResetPassword2.default }),
+		_react2.default.createElement(_reactRouter.Route, { path: '*', component: _MainPage2.default })
 	);
 
 	function render() {

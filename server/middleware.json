@@ -46,7 +46,9 @@
     }
   },
   "final": {
-    "loopback#urlNotFound": {}
+    "loopback#urlNotFound": {
+      "params" : "$!../client/index.html"
+    }
   },
   "final:after": {
     "loopback#errorHandler": {}
