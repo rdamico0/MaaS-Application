@@ -326,13 +326,12 @@ module.exports = function(Account) {
   };
 
 
-  Account.resetPassword = function(options, cb) {
+  Account.resetPassword = function(email, cb) {
     cb = cb || utils.createPromiseCallback();
     var UserModel = this;
     var ttl = UserModel.settings.resetPasswordTokenTTL || DEFAULT_RESET_PW_TTL;
 
-    options = options || {};
-    if (typeof options.email !== 'string') {
+    if (typeof email !== 'string') {
       var err = new Error('Email is required');
       err.statusCode = 400;
       err.code = 'EMAIL_REQUIRED';
@@ -340,7 +339,7 @@ module.exports = function(Account) {
       return cb.promise;
     }
 
-    UserModel.findOne({ where: {email: options.email} }, function(err, user) {
+    UserModel.findOne({ where: {email: email} }, function(err, user) {
       if (err) {
         return cb(err);
       }
@@ -350,19 +349,22 @@ module.exports = function(Account) {
         err.code = 'EMAIL_NOT_FOUND';
         return cb(err);
       }
-      // create a short lived access token for temp login to change password
-      // TODO(ritch) - eventually this should only allow password change
-      user.accessTokens.create({ttl: ttl}, function(err, accessToken) {
+
+      options = {}
+			options.type = "email";
+      options.text = sender + text;
+      options.from = "no.reply@maas.com";
+      options.to = email;
+      options.subject = "Email Recovery";
+
+      Account.app.models.Email.send(options, function(err, email) {
         if (err) {
-          return cb(err);
+          next(err);
+        } else {
+          next();
         }
-        cb();
-        UserModel.emit('resetPasswordRequest', {
-          email: options.email,
-          accessToken: accessToken,
-          user: user
-        });
       });
+
     });
 
     return cb.promise;
@@ -529,9 +531,9 @@ module.exports = function(Account) {
       {
         description: 'Reset password for a user with email.',
         accepts: [
-          {arg: 'options', type: 'object', required: true, http: {source: 'body'}}
+          {arg: 'id', type: 'string', required: true, http: {source: 'path'}}
         ],
-        http: {verb: 'post', path: '/reset'}
+        http: {verb: 'post', path: '/:id/reset'}
       }
     );
 
