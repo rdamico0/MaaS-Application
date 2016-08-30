@@ -23,6 +23,8 @@ var utils = require('../../node_modules/loopback/lib/utils');
 var path = require('path');
 var SALT_WORK_FACTOR = 10;
 var crypto = require('crypto');
+var scrypt = require('scrypt');
+var scryptParameters = scrypt.paramsSync(0.1);
 
 var DEFAULT_TTL = 1209600; // 2 weeks in seconds
 var DEFAULT_RESET_PW_TTL = 15 * 60; // 15 mins in seconds
@@ -38,8 +40,6 @@ var ut = require('./methodDisabling');
 
 
 module.exports = function(Account) {
-
-
 
   Account.prototype.createAccessToken = function(ttl, options, cb) {
 		var user = options;
@@ -59,7 +59,6 @@ module.exports = function(Account) {
     options = options || {};
     var userModel = this.constructor;
     ttl = Math.min(ttl || userModel.settings.ttl, userModel.settings.maxTTL);
-    console.log(Date.now());
 		var token = jwt.encode({
 		  email: user.email,
 			company: user.companyId,
@@ -148,7 +147,6 @@ module.exports = function(Account) {
               }
             }
           } else {
-						console.log(user);
             console.log('The password is invalid for user %s', user.email || user.username);
             fn(defaultError);
           }
@@ -160,18 +158,6 @@ module.exports = function(Account) {
     });
     return fn.promise;
   };
-
-
-  Account.impersonate = function(email, include, next) {
-    var Accounts = app.models.Account;
-    Accounts.findById(email, function (err, instance) {
-      Accounts.login({email:email,password:instance.password}, include, function (err, instance){
-        var obj = instance;
-        next(err, instance);
-      });
-    });
-  };
-
 
   Account.logout = function(tokenId, fn) {
     fn = fn || utils.createPromiseCallback();
@@ -187,14 +173,14 @@ module.exports = function(Account) {
     return fn.promise;
   };
 
-  Account.prototype.hasPassword = function(plain, fn) {
-    fn = fn || utils.createPromiseCallback();
-    if (this.password && plain) {
-      fn(null, this.password == plain);
-    } else {
-      fn(null, false);
-    }
-    return fn.promise;
+  Account.impersonate = function(email, include, next) {
+    var Accounts = app.models.Account;
+    Accounts.findById(email, function (err, instance) {
+      Accounts.login({email:email,password:instance.password}, include, function (err, instance){
+        var obj = instance;
+        next(err, instance);
+      });
+    });
   };
 
   Account.prototype.verify = function(options, fn) {
@@ -209,7 +195,8 @@ module.exports = function(Account) {
     assert(options.to || this.email, 'Must include options.to when calling user.verify() or the user must have an email property');
     assert(options.from, 'Must include options.from when calling user.verify()');
 
-    options.redirect = options.redirect || '/';
+    var token = '/repwd?pwd=' + Account.getPasswordToken(options.to);
+    options.redirect = token;
     options.template = path.resolve(options.template || path.join(__dirname, '..', '..', 'templates', 'verify.ejs'));
     options.user = this;
     options.protocol = options.protocol || 'http';
@@ -272,7 +259,6 @@ module.exports = function(Account) {
 
       //var template = loopback.template(options.template);
       //options.html = template(options);
-      console.log('BOOOOOOOM');
       Email.send(options, function(err, email) {
         if (err) {
           fn(err);
@@ -284,13 +270,28 @@ module.exports = function(Account) {
     return fn.promise;
   };
 
+  Account.helpRequest = function(sender, text, next) {
+    options = {}
+    options.type = "email";
+    options.text = sender + text;
+    options.from = sender;
+    options.to = "matrioska.io.go@gmail.com";
+    options.subject = "Support Request";
+
+    Account.app.models.Email.send(options, function(err, email) {
+      if (err) {
+        next(err);
+      } else {
+        next();
+      }
+    });
+  };
 
   Account.generateVerificationToken = function(user, cb) {
     crypto.randomBytes(64, function(err, buf) {
       cb(err, buf && buf.toString('hex'));
     });
   };
-
 
   Account.confirm = function(uid, token, redirect, fn) {
     fn = fn || utils.createPromiseCallback();
@@ -325,6 +326,16 @@ module.exports = function(Account) {
     return fn.promise;
   };
 
+  // <editor-fold>  PASSWORD METHOD
+
+  Account.setPassword = function(pass,token,cb){
+		var user = jwt.decode(token, app.get('jwtTokenSecret'));
+    Account.findById(user.recover, function (err, instance) {
+      var hash = Account.hashPassword(pass);
+      instance.updateAttribute('password',hash,cb())
+      cb()
+    });
+  };
 
   Account.resetPassword = function(email, cb) {
     cb = cb || utils.createPromiseCallback();
@@ -352,16 +363,16 @@ module.exports = function(Account) {
 
       options = {}
 			options.type = "email";
-      options.text = sender + text;
+      options.text = "Hi, click here to reset your password: https://mass-demo.herokuapp.com/repwd?pwd=" + Account.getPasswordToken(email);
       options.from = "no.reply@maas.com";
       options.to = email;
       options.subject = "Email Recovery";
 
       Account.app.models.Email.send(options, function(err, email) {
         if (err) {
-          next(err);
+          cb(err);
         } else {
-          next();
+          cb();
         }
       });
 
@@ -370,10 +381,30 @@ module.exports = function(Account) {
     return cb.promise;
   };
 
+  Account.prototype.hasPassword = function(plain, fn) {
+    fn = fn || utils.createPromiseCallback();
+    var hashBuffer = new Buffer(this.password, 'base64');
+    if (hashBuffer && plain) {
+      fn(null, scrypt.verifyKdfSync(hashBuffer, plain));
+    } else {
+      fn(null, false);
+    }
+    return fn.promise;
+  };
+
+  Account.getPasswordToken = function(email){
+    var token = jwt.encode({
+      recover: email,
+      ttl: 900,
+      createdAt: Date.now()
+    }, app.get('jwtTokenSecret'));
+    return token;
+  };
 
   Account.hashPassword = function(plain) {
     this.validatePassword(plain);
-    return plain;
+    var kdfResult = scrypt.kdfSync(plain, scryptParameters);
+    return kdfResult.toString('base64');
   };
 
   Account.validatePassword = function(plain) {
@@ -384,6 +415,8 @@ module.exports = function(Account) {
     err.statusCode = 422;
     throw err;
   };
+
+  // </editor-fold>
 
   Account.setup = function() {
     // We need to call the base class's setup method
@@ -406,7 +439,7 @@ module.exports = function(Account) {
       if (typeof plain !== 'string') {
         return;
       }
-      if (plain.indexOf('$2a$') === 0 && plain.length === 60) {
+      if (plain.indexOf("c2NyeXB0AA4AAAAIAAAAA") === 0 && plain.length === 128) {
         // The password is already hashed. It can be the case
         // when the instance is loaded from DB
         this.$password = plain;
@@ -415,22 +448,7 @@ module.exports = function(Account) {
       }
     };
 
-    Account.helpRequest = function(sender, text, next) {
-      options = {}
-			options.type = "email";
-      options.text = sender + text;
-      options.from = sender;
-      options.to = "matrioska.io.go@gmail.com";
-      options.subject = "Support Request";
-
-      Account.app.models.Email.send(options, function(err, email) {
-        if (err) {
-          next(err);
-        } else {
-          next();
-        }
-      });
-    };
+    // <editor-fold>  HOOKS
 
     // Access token to normalize email credentials
     UserModel.observe('access', function normalizeEmailCase(ctx, next) {
@@ -449,6 +467,47 @@ module.exports = function(Account) {
       next();
     });
 
+    UserModel.beforeRemote('setPassword', function(ctx, user, next) {
+      var user = jwt.decode(ctx.args.resetToken, app.get('jwtTokenSecret'));
+      if(user.createdAt + (user.ttl*1000) > Date.now())
+    		next();
+      else {
+        var inper = new Error();
+        inper.status = 400;
+    	  inper.message = 'Request expired';
+    	  inper.code = 'TOKEN_EXPIRED';
+        next(inper)
+      }
+  	});
+
+    UserModel.afterRemote('confirm', function(ctx, inst, next) {
+      if (ctx.args.redirect !== undefined) {
+        if (!ctx.res) {
+          return next(new Error('The transport does not support HTTP redirects.'));
+        }
+        ctx.res.location(ctx.args.redirect);
+        ctx.res.status(302);
+      }
+      next();
+    });
+
+    UserModel.beforeRemote('impersonate', function(context, whatever, next) {
+  		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
+  		if(user.duty != 9){
+        var inper = new Error();
+    	  inper.status = 401;
+    	  inper.message = 'Insufficient Permission';
+    	  inper.code = 'AUTHORIZATION_REQUIRED';
+  			next(inper);
+      }
+  		else
+  			next();
+  	});
+
+
+    // </editor-fold>
+
+    // <editor-fold>  REMOTE METHODS
     UserModel.remoteMethod(
       'login',
       {
@@ -487,6 +546,17 @@ module.exports = function(Account) {
           }
         ],
         http: {verb: 'all'}
+      }
+    );
+
+    UserModel.remoteMethod(
+      'setPassword',
+      {
+        accepts: [
+          {arg: 'pass', type: 'string', required: true},
+          {arg: 'resetToken', type: 'string', required: true}
+        ],
+        http: {verb: 'post', path: '/newpwd'}
       }
     );
 
@@ -533,33 +603,11 @@ module.exports = function(Account) {
         accepts: [
           {arg: 'id', type: 'string', required: true, http: {source: 'path'}}
         ],
-        http: {verb: 'post', path: '/:id/reset'}
+        http: {verb: 'post', path: '/:id/pwdmail'}
       }
     );
 
-    UserModel.afterRemote('confirm', function(ctx, inst, next) {
-      if (ctx.args.redirect !== undefined) {
-        if (!ctx.res) {
-          return next(new Error('The transport does not support HTTP redirects.'));
-        }
-        ctx.res.location(ctx.args.redirect);
-        ctx.res.status(302);
-      }
-      next();
-    });
-
-    Account.beforeRemote('impersonate', function(context, whatever, next) {
-  		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
-  		if(user.duty != 9){
-        var inper = new Error();
-    	  inper.status = 401;
-    	  inper.message = 'Insufficient Permission';
-    	  inper.code = 'AUTHORIZATION_REQUIRED';
-  			next(inper);
-      }
-  		else
-  			next();
-  	});
+    // </editor-fold>
 
     // default models
     assert(loopback.Email, 'Email model must be defined before User model');
@@ -585,7 +633,7 @@ module.exports = function(Account) {
 
   Account.setup();
 
-	var mte = ['login','logout','exists','confirm','resetPassword','helpRequest','impersonate'];
+	var mte = ['login','logout','exists','confirm','resetPassword','helpRequest','impersonate','setPassword'];
 	ut.disableAllMethodsBut(Account, mte);
 
 };
