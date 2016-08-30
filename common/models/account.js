@@ -439,11 +439,12 @@ module.exports = function(Account) {
       if (typeof plain !== 'string') {
         return;
       }
-      if (plain.indexOf("c2NyeXB0AA4AAAAIAAAAA") === 0 && plain.length === 128) {
+      if (plain.indexOf("c2NyeX") === 0 && plain.length === 128) {
         // The password is already hashed. It can be the case
         // when the instance is loaded from DB
         this.$password = plain;
       } else {
+        console.log("RECRYPTED BY SETTER");
         this.$password = this.constructor.hashPassword(plain);
       }
     };
