@@ -148,8 +148,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	//const api = 'https://mass-demo.herokuapp.com/api/'
-	var api = 'http://0.0.0.0:3000/api/';
+	var api = 'https://mass-demo.herokuapp.com/api/';
+	//const api = 'http://0.0.0.0:3000/api/'
 	var goto = (0, _reactRouterRedux.routerMiddleware)(_reactRouter.browserHistory);
 	var logger = (0, _reduxLogger2.default)();
 	var store = (0, _redux.createStore)(_RootReducer2.default, (0, _redux.applyMiddleware)(goto, logger, _reduxThunk2.default.withExtraArgument(api)), (0, _reduxPersist.autoRehydrate)());
@@ -29508,8 +29508,11 @@
 	function execDSLI(id, data) {
 		return function (dispatch, getState, api) {
 			dispatch(requestExec());
+			console.log("EXEC");
 			return _superagent2.default.post(api + 'dsl/' + id + '/execute?access_token=' + getState().loggedUser.token).send({ query: data }).then(function (result) {
 				var res = JSON.parse(result.text);
+				console.log("RESULT");
+				console.log(res);
 				dispatch(receiveExec(true, res));
 			}, function (error) {
 				dispatch(receiveExec(false, error));
@@ -55260,24 +55263,24 @@
 	    var preCompileFile = macro + x;
 
 	    var compiledDSLI = (0, _sweet.compile)(preCompileFile); //compilazione del preCompiledFile
-
-	    console.log("FILE PRECOMPILATO: ");
-	    console.log(preCompileFile);
-	    console.log("DSLI COMPILATA: ");
-	    console.log(compiledDSLI);
-	    //console.log(parse);
-	    //this.qualcosa crea una variabile resistente alle chiamate di render
-	    //this.parser = new Parser;
-	    //this.parser.compileAndRun();
-
-	    var fd;
-	    function insert(pro) {
-	      fd = pro;
-	    }
-	    //vm.runInNewContext(compiledDSLI.code, {insert:insert, require:require, cell:cell});
-	    /*var query = "db.collection('Account').find({dutyId:{$gt: 2}},{password: 1}).sort({subscribedAt: 1})";
-	    console.log("QUERY: ");
-	    console.log(fd.returnData(), fd.getType());*/
+	    /*
+	        console.log("FILE PRECOMPILATO: ");
+	        console.log(preCompileFile);
+	        console.log("DSLI COMPILATA: ");
+	        console.log(compiledDSLI);
+	        //console.log(parse);
+	        //this.qualcosa crea una variabile resistente alle chiamate di render
+	        //this.parser = new Parser;
+	        //this.parser.compileAndRun();
+	    
+	        var fd;
+	        function insert(pro){
+	         fd=pro;
+	        }
+	        //vm.runInNewContext(compiledDSLI.code, {insert:insert, require:require, cell:cell});
+	        /*var query = "db.collection('Account').find({dutyId:{$gt: 2}},{password: 1}).sort({subscribedAt: 1})";
+	        console.log("QUERY: ");
+	        console.log(fd.returnData(), fd.getType());*/
 
 	    return _this;
 	  }
