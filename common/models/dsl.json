@@ -1,7 +1,7 @@
 {
   "name": "DSL",
   "description": "Entità che rappresenta le specifiche di DSL",
-  "plural": "dsl_definitions",
+  "plural": "dsl",
   "base": "PersistedModel",
   "strict": false,
   "idInjection": true,

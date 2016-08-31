@@ -19,7 +19,7 @@ html, body {
     font-family:'Open Sans', sans-serif;
     font-size:14px;
     background-image:url(../img/sativa.png);
-    margin-top: 2.5%;
+    padding-top: 3.5%;
 }
 
 h1, h2, h3, h4, h5, h6 {
