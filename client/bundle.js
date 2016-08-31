@@ -148,8 +148,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var api = 'https://mass-demo.herokuapp.com/api/';
-	//const api = 'http://0.0.0.0:3000/api/'
+	//const api = 'https://mass-demo.herokuapp.com/api/'
+	var api = 'http://0.0.0.0:3000/api/';
 	var goto = (0, _reactRouterRedux.routerMiddleware)(_reactRouter.browserHistory);
 	var logger = (0, _reduxLogger2.default)();
 	var store = (0, _redux.createStore)(_RootReducer2.default, (0, _redux.applyMiddleware)(goto, logger, _reduxThunk2.default.withExtraArgument(api)), (0, _reduxPersist.autoRehydrate)());
