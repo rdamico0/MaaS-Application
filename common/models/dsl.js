@@ -76,7 +76,6 @@ module.exports = function(DSL) {
 		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
 
 		DSL.findById(context.args.id, function (err, instance) {
-			context.result.DSLcode = instance.code;
 			if(user.company != instance.companyId)
 				next(wrcon);
 			else if(user.duty >= 2)
