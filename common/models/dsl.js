@@ -44,19 +44,23 @@ module.exports = function(DSL) {
 	};
 
 	var execute = function(query, db, callback) {
-	 //query = db.collection('Account').find({companyId:'matrioska'})
-	 query = eval(query)
-	 var count = 0
-	 var results = []
-   query.each(function(err, doc) {
-      assert.equal(err, null);
-    	if (doc != null) {
-	       results[count] = doc;
-				 count = count + 1;
-      } else {
-         callback(err, results);
-      }
-   });
+		try{
+		 //query = db.collection('Account').find({companyId:'matrioska'})
+		 query = eval(query)
+		 var count = 0
+		 var results = []
+	   query.each(function(err, doc) {
+	      assert.equal(err, null);
+	    	if (doc != null) {
+		       results[count] = doc;
+					 count = count + 1;
+	      } else {
+	         callback(err, results);
+	      }
+	   });
+	 } catch(err){
+		 callback(err)
+	 }
 };
 
 	DSL.remoteMethod('runquery',{

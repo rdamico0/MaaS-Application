@@ -213,6 +213,9 @@ module.exports = function(Company) {
 	});
 
 	Company.beforeRemote('*.__create__users', function(context, whatever, next) {
+		/*var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
+		if(user.company != context.ctorArgs.id)
+			next(wrcon);*/
 		if(context.args.data.dutyId < 1 || context.args.data.dutyId > 3){
 			var invdt = new Error();
 			invdt.status = 422;
@@ -309,7 +312,7 @@ module.exports = function(Company) {
 		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
 		if(user.company != context.ctorArgs.id)
 			next(wrcon);
-		else if(user.duty < 3)
+		else if(user.duty < 2)
 			next(inper);
 		else
 			next();
