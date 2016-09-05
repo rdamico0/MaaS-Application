@@ -49,9 +49,14 @@ module.exports = function(DSL) {
 		try{
 		 //query = db.collection('Account').find({companyId:'matrioska'})
 		 query = eval(query)
+
+	 } catch(ex){
+			 callback(ex);
+		}
 		 var count = 0
 		 var results = []
 	   query.each(function(err, doc) {
+			 try{
 	      assert.equal(err, null);
 	    	if (doc != null) {
 		       results[count] = doc;
@@ -59,10 +64,11 @@ module.exports = function(DSL) {
 	      } else {
 	         callback(err, results);
 	      }
+			}
+			catch(ex){
+				callback(ex);
+			}
 	   });
-	 } catch(err){
-		 callback(err)
-	 }
 };
 
 	DSL.remoteMethod('runquery',{
