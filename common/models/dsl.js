@@ -95,9 +95,10 @@ module.exports = function(DSL) {
 		}
 		else{
 			DSL.findById(context.args.id, function (err, instance) {
+				console.log(instance);
 				if(!instance)
 					next(inper);
-				if(user.company != instance.companyId)
+				else if(user.company != instance.companyId)
 					next(wrcon);
 				else if(user.duty >= 2)
 					next();
