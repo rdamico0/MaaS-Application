@@ -69,18 +69,16 @@ module.exports = function(Company) {
 		if(user.duty < 2){
 			next();
 		}
-		else if(context.args.filter == "public"){
+		if(context.args.filter == "public"){
 			context.args.filter = {where: {or: [{permits: 1}, {permits: 2}, {permits: 3}]}}
 			next();
 		}
-		else if(context.args.filter == "private"){
+		if(context.args.filter == "private"){
 			context.args.filter = {where: {permits: 0}}
 			next();
 		}
-		else{
-			context.args.filter = {}
-			next();
-		}
+		context.args.filter = {}
+		next();
 	});
 
 	Company.beforeRemote('*.__updateById__dsls', function(context, whatever, next) {
@@ -97,12 +95,11 @@ module.exports = function(Company) {
 				next(inper);
 		  if(user.duty >= 2) //ADMIN following rules
 				next();
-			else if(instance.accountId == user.email) //writer modifying his DSL
+			if(instance.accountId == user.email) //writer modifying his DSL
 				next();
-			else if(instance.permits > 2) //member modifying a shared DSL
+			if(instance.permits > 2) //member modifying a shared DSL
 				next();
-			else
-				next(inper);
+			next(inper);
 		});
 
 	});
@@ -124,8 +121,7 @@ module.exports = function(Company) {
 					next(inper);
 			});
 		}
-		else
-			next();
+		next();
 	});
 
 	Company.afterRemote('*.__findById__dsls', function(context, whatever, next) {
@@ -139,12 +135,11 @@ module.exports = function(Company) {
 			context.result.DSLcode = instance.code;
 			if(user.duty >= 2)
 				next();
-			else if(instance.accountId == user.email)
+			if(instance.accountId == user.email)
 				next();
-			else if(instance.permits > 0)
+			if(instance.permits > 0)
 				next();
-			else
-				next(inper);
+			next(inper);
 		});
 	});
 
@@ -226,7 +221,7 @@ module.exports = function(Company) {
 	});
 
 	Company.beforeRemote('*.__create__users', function(context, whatever, next) {
-		var user = jwt.decode(context.req.accessToken);
+		var user = jwt.decode(context.req.accessToken));
 		if(!user){
 			Company.findById(context.ctorArgs.id, function (err, instance) {
 				if(instance.ownerId != context.args.data.id){

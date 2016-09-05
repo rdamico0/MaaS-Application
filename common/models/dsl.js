@@ -1,6 +1,6 @@
 var config = require('../../server/config.json');
 var app = require('../../server/server.js');
-var jwt = require('jwt-simple');
+var jwt = require('./jwtUtils');
 var ut = require('./methodDisabling');
 
 var MongoClient = require('mongodb').MongoClient;
@@ -23,6 +23,8 @@ module.exports = function(DSL) {
 	ut.disableAllMethodsBut(DSL, mte);
 
 	DSL.runquery = function(id, data, cb){
+		console.log("EXECUTING QUERY:");
+		console.log(data.query);
 		DSL.findById(id, function (err, instance) {
 			var Database = app.models.Database;
 			var tempId = "57c6a6831013c100113951d8"
@@ -77,8 +79,9 @@ module.exports = function(DSL) {
 	});
 
 	DSL.beforeRemote('runquery', function(context, whatever, next) {
-		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
-
+		var user = jwt.decodeJWT(context.req.accessToken);
+		if(!user)
+			next(inper);
 		DSL.findById(context.args.id, function (err, instance) {
 			if(user.company != instance.companyId)
 				next(wrcon);

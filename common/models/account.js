@@ -1,23 +1,3 @@
-/*
-
-module.exports = function(Account) {
-
-	var mte = ['login','logout','exists','confirm','resetPassword'];
-	ut.disableAllMethodsBut(Account, mte);
-
-	Account.beforeRemoe('login', function(context, userInstance, next) {
-		var token = jwt.encode({
-		  iss: 'hello'
-		}, app.get('jwtTokenSecret'));
-
-		var decoded = jwt.decode(token, app.get('jwtTokenSecret'));
-
-	});
-*/
-/*!
- * Module Dependencies.
- */
-
 var loopback = require('../../node_modules/loopback/lib/loopback');
 var utils = require('../../node_modules/loopback/lib/utils');
 var path = require('path');
@@ -34,12 +14,16 @@ var assert = require('assert');
 var config = require('../../server/config.json');
 var app = require('../../server/server.js');
 
-var jwt = require('jwt-simple');
+var jwt = require('./jwtUtils');
 var path = require('path');
 var ut = require('./methodDisabling');
-
+var inper = new Error();
 
 module.exports = function(Account) {
+
+  inper.status = 401;
+  inper.message = 'Insufficient Permission';
+  inper.code = 'AUTHORIZATION_REQUIRED';
 
   Account.prototype.createAccessToken = function(ttl, options, cb) {
 		var user = options;
@@ -59,12 +43,12 @@ module.exports = function(Account) {
     options = options || {};
     var userModel = this.constructor;
     ttl = Math.min(ttl || userModel.settings.ttl, userModel.settings.maxTTL);
-		var token = jwt.encode({
+		var token = jwt.encodeJWT({
 		  email: user.email,
 			company: user.companyId,
 			duty: user.dutyId,
       createdAt: Date.now()
-		}, app.get('jwtTokenSecret'));
+		});
     this.accessTokens.create({
 			id: token,
       ttl: ttl
@@ -72,25 +56,14 @@ module.exports = function(Account) {
     return cb.promise;
   };
 
-  Account.normalizeCredentials = function(credentials) {
-    var query = {};
-    credentials = credentials || {};
-      if (credentials.email) {
-        query.email = credentials.email;
-      } else if (credentials.username) {
-        query.username = credentials.username;
-      }
-    return query;
-  };
-
-  Account.login = function(credentials, include, fn) {
+  Account.login = function(credentials, include, cb) {
     var self = this;
     if (typeof include === 'function') {
-      fn = include;
+      cb = include;
       include = undefined;
     }
 
-    fn = fn || utils.createPromiseCallback();
+    cb = cb || utils.createPromiseCallback();
 
     include = (include || '');
     if (Array.isArray(include)) {
@@ -101,36 +74,35 @@ module.exports = function(Account) {
       include = include.toLowerCase();
     }
 
-    var query = self.normalizeCredentials(credentials);
-    if (!query.email && !query.username) {
-      var err2 = new Error('username or email is required');
+    if (!credentials.email) {
+      var err2 = new Error('Email is required');
       err2.statusCode = 400;
-      err2.code = 'USERNAME_EMAIL_REQUIRED';
-      fn(err2);
-      return fn.promise;
+      err2.code = 'EMAIL_REQUIRED';
+      cb(err2);
+      return cb.promise;
     }
 
-    self.findOne({where: query}, function(err, user) {
+    self.findById(credentials.email, function(err, user) {
       var defaultError = new Error('login failed');
       defaultError.statusCode = 401;
       defaultError.code = 'LOGIN_FAILED';
 
       function tokenHandler(err, token) {
-        if (err) return fn(err);
+        if (err) return cb(err);
         if (Array.isArray(include) ? include.indexOf('user') !== -1 : include === 'user') {
           token.__data.user = user;
         }
-        fn(err, token);
+        cb(err, token);
       }
 
       if (err) {
         console.log('An error is reported from User.findOne: %j', err);
-        fn(defaultError);
+        cb(defaultError);
       } else if (user) {
         user.hasPassword(credentials.password, function(err, isMatch) {
           if (err) {
             console.log('An error is reported from User.hasPassword: %j', err);
-            fn(defaultError);
+            cb(defaultError);
           } else if (isMatch) {
             if (self.settings.emailVerificationRequired && !user.emailVerified) {
               // Fail to log in if email verification is not done yet
@@ -138,7 +110,7 @@ module.exports = function(Account) {
               err = new Error('login failed as the email has not been verified');
               err.statusCode = 401;
               err.code = 'LOGIN_FAILED_EMAIL_NOT_VERIFIED';
-              fn(err);
+              cb(err);
             } else {
               if (user.createAccessToken.length === 2) {
                 user.createAccessToken(credentials.ttl, tokenHandler);
@@ -148,43 +120,43 @@ module.exports = function(Account) {
             }
           } else {
             console.log('The password is invalid for user %s', user.email || user.username);
-            fn(defaultError);
+            cb(defaultError);
           }
         });
       } else {
-        console.log('No matching record is found for user %s', query.email || query.username);
-        fn(defaultError);
+        console.log('No matching record is found for user %s', credentials.email);
+        cb(defaultError);
       }
     });
-    return fn.promise;
+    return cb.promise;
   };
 
-  Account.logout = function(tokenId, fn) {
-    fn = fn || utils.createPromiseCallback();
+  Account.logout = function(tokenId, cb) {
+    cb = cb || utils.createPromiseCallback();
     this.relations.accessTokens.modelTo.findById(tokenId, function(err, accessToken) {
       if (err) {
-        fn(err);
+        cb(err);
       } else if (accessToken) {
-        accessToken.destroy(fn);
+        accessToken.destroy(cb);
       } else {
-        fn(new Error('could not find accessToken'));
+        cb(new Error('could not find accessToken'));
       }
     });
-    return fn.promise;
+    return cb.promise;
   };
 
-  Account.impersonate = function(email, include, next) {
+  Account.impersonate = function(email, include, cb) {
     var Accounts = app.models.Account;
     Accounts.findById(email, function (err, instance) {
       Accounts.login({email:email,password:instance.password}, include, function (err, instance){
         var obj = instance;
-        next(err, instance);
+        cb(err, instance);
       });
     });
   };
 
-  Account.prototype.verify = function(options, fn) {
-    fn = fn || utils.createPromiseCallback();
+  Account.prototype.verify = function(options, cb) {
+    cb = cb || utils.createPromiseCallback();
 
     var user = this;
     var userModel = this.constructor;
@@ -231,12 +203,12 @@ module.exports = function(Account) {
     var tokenGenerator = options.generateVerificationToken || Account.generateVerificationToken;
 
     tokenGenerator(user, function(err, token) {
-      if (err) { return fn(err); }
+      if (err) { return cb(err); }
 
       user.verificationToken = token;
       user.save(function(err) {
         if (err) {
-          fn(err);
+          cb(err);
         } else {
           sendEmail(user);
         }
@@ -261,16 +233,16 @@ module.exports = function(Account) {
       //options.html = template(options);
       Email.send(options, function(err, email) {
         if (err) {
-          fn(err);
+          cb(err);
         } else {
-          fn(null, {email: email, token: user.verificationToken, uid: user.id});
+          cb(null, {email: email, token: user.verificationToken, uid: user.id});
         }
       });
     }
-    return fn.promise;
+    return cb.promise;
   };
 
-  Account.helpRequest = function(sender, text, next) {
+  Account.helpRequest = function(sender, text, cb) {
     options = {}
     options.type = "email";
     options.text = sender + text;
@@ -280,9 +252,9 @@ module.exports = function(Account) {
 
     Account.app.models.Email.send(options, function(err, email) {
       if (err) {
-        next(err);
+        cb(err);
       } else {
-        next();
+        cb();
       }
     });
   };
@@ -293,20 +265,20 @@ module.exports = function(Account) {
     });
   };
 
-  Account.confirm = function(uid, token, redirect, fn) {
-    fn = fn || utils.createPromiseCallback();
+  Account.confirm = function(uid, token, redirect, cb) {
+    cb = cb || utils.createPromiseCallback();
     this.findById(uid, function(err, user) {
       if (err) {
-        fn(err);
+        cb(err);
       } else {
         if (user && user.verificationToken === token) {
           user.verificationToken = undefined;
           user.emailVerified = true;
           user.save(function(err) {
             if (err) {
-              fn(err);
+              cb(err);
             } else {
-              fn();
+              cb();
             }
           });
         } else {
@@ -319,17 +291,19 @@ module.exports = function(Account) {
             err.statusCode = 404;
             err.code = 'USER_NOT_FOUND';
           }
-          fn(err);
+          cb(err);
         }
       }
     });
-    return fn.promise;
+    return cb.promise;
   };
 
   // <editor-fold>  PASSWORD METHOD
 
   Account.setPassword = function(pass,token,cb){
-		var user = jwt.decode(token, app.get('jwtTokenSecret'));
+		var user = jwt.decodeJWT({id:token});
+    if(!user)
+      cb(inper);
     Account.findById(user.recover, function (err, instance) {
       var hash = Account.hashPassword(pass);
       instance.updateAttribute('password',hash,cb())
@@ -381,23 +355,23 @@ module.exports = function(Account) {
     return cb.promise;
   };
 
-  Account.prototype.hasPassword = function(plain, fn) {
-    fn = fn || utils.createPromiseCallback();
+  Account.prototype.hasPassword = function(plain, cb) {
+    cb = cb || utils.createPromiseCallback();
     var hashBuffer = new Buffer(this.password, 'base64');
     if (hashBuffer && plain) {
-      fn(null, scrypt.verifyKdfSync(hashBuffer, plain));
+      cb(null, scrypt.verifyKdfSync(hashBuffer, plain));
     } else {
-      fn(null, false);
+      cb(null, false);
     }
-    return fn.promise;
+    return cb.promise;
   };
 
   Account.getPasswordToken = function(email){
-    var token = jwt.encode({
+    var token = jwt.encodeJWT({
       recover: email,
       ttl: 900,
       createdAt: Date.now()
-    }, app.get('jwtTokenSecret'));
+    });
     return token;
   };
 
@@ -452,57 +426,55 @@ module.exports = function(Account) {
     // <editor-fold>  HOOKS
 
     // Access token to normalize email credentials
-    UserModel.observe('access', function normalizeEmailCase(ctx, next) {
+    UserModel.observe('access', function normalizeEmailCase(ctx, cb) {
       if (!ctx.Model.settings.caseSensitiveEmail && ctx.query.where && ctx.query.where.email) {
         ctx.query.where.email = ctx.query.where.email.toLowerCase();
       }
-      next();
+      cb();
     });
 
     // Make sure emailVerified is not set by creation
-    UserModel.beforeRemote('create', function(ctx, user, next) {
+    UserModel.beforeRemote('create', function(ctx, user, cb) {
       var body = ctx.req.body;
       if (body && body.emailVerified) {
         body.emailVerified = false;
       }
-      next();
+      cb();
     });
 
-    UserModel.beforeRemote('setPassword', function(ctx, user, next) {
-      var user = jwt.decode(ctx.args.resetToken, app.get('jwtTokenSecret'));
+    UserModel.beforeRemote('setPassword', function(ctx, user, cb) {
+      var user = jwt.decodeJWT({id:ctx.args.resetToken});
+      if(!user)
+        cb(inper);
       if(user.createdAt + (user.ttl*1000) > Date.now())
-    		next();
+    		cb();
       else {
-        var inper = new Error();
-        inper.status = 400;
-    	  inper.message = 'Request expired';
-    	  inper.code = 'TOKEN_EXPIRED';
-        next(inper)
+        var tkxp = new Error();
+        tkxp.status = 400;
+    	  tkxp.message = 'Request expired';
+    	  tkxp.code = 'TOKEN_EXPIRED';
+        cb(tkxp)
       }
   	});
 
-    UserModel.afterRemote('confirm', function(ctx, inst, next) {
+    UserModel.afterRemote('confirm', function(ctx, inst, cb) {
       if (ctx.args.redirect !== undefined) {
         if (!ctx.res) {
-          return next(new Error('The transport does not support HTTP redirects.'));
+          return cb(new Error('The transport does not support HTTP redirects.'));
         }
         ctx.res.location(ctx.args.redirect);
         ctx.res.status(302);
       }
-      next();
+      cb();
     });
 
-    UserModel.beforeRemote('impersonate', function(context, whatever, next) {
-  		var user = jwt.decode(context.req.accessToken.id, app.get('jwtTokenSecret'));
-  		if(user.duty != 9){
-        var inper = new Error();
-    	  inper.status = 401;
-    	  inper.message = 'Insufficient Permission';
-    	  inper.code = 'AUTHORIZATION_REQUIRED';
-  			next(inper);
+    UserModel.beforeRemote('impersonate', function(context, whatever, cb) {
+  		var user = jwt.decodeJWT(context.req.accessToken);
+      if(!user || user.duty != 9){
+  			cb(inper);
       }
   		else
-  			next();
+  			cb();
   	});
 
 
