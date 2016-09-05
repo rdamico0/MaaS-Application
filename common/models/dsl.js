@@ -90,7 +90,8 @@ module.exports = function(DSL) {
 
 	DSL.beforeRemote('runquery', function(context, whatever, next) {
 		var user = jwt.decodeJWT(context.req.accessToken);
-		if(!user || !context.args.id || context.args.id == undefined){
+		console.log(!context.args.id);
+		if(!user || !context.args.id){
 		  console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 			next(inper);
 		}
