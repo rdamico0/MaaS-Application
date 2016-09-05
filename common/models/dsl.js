@@ -92,18 +92,21 @@ module.exports = function(DSL) {
 		var user = jwt.decodeJWT(context.req.accessToken);
 		if(!user || !context.args.id || context.args.id == undefined)
 			next(inper);
-		DSL.findById(context.args.id, function (err, instance) {
-			if(user.company != instance.companyId)
-				next(wrcon);
-			else if(user.duty >= 2)
-				next();
-			else if(instance.accountId == user.email)
-				next();
-			else if(instance.permits > 0)
-				next();
-			else
-				next(inper);
-		});
+		else{
+			console.log(context.args.id);
+			DSL.findById(context.args.id, function (err, instance) {
+				if(user.company != instance.companyId)
+					next(wrcon);
+				else if(user.duty >= 2)
+					next();
+				else if(instance.accountId == user.email)
+					next();
+				else if(instance.permits > 0)
+					next();
+				else
+					next(inper);
+			});
+		}
 	});
 
 };
