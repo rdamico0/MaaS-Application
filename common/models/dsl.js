@@ -28,9 +28,9 @@ module.exports = function(DSL) {
 		DSL.findById(id, function (err, instance) {
 			var Database = app.models.Database;
 			var tempId = "57c6a6831013c100113951d8"
-			try
+			try{
 				Database.findById(tempId, function (err, db) {
-					try
+					try{
 						MongoClient.connect(db.uri, function(err, db) {
 						  try{
 							assert.equal(null, err);
@@ -39,14 +39,13 @@ module.exports = function(DSL) {
 						 			 cb(err, docs);
 							  });
 							}
-							catch(ex)
-					    	cb(ex);
+							catch(ex) {cb(ex)}
 						});
-					catch(ex1)
-			    	cb(ex1);
+					}
+					catch(ex1) {cb(ex1)}
 				});
-			catch(ex2)
-	    	cb(ex2);
+			}
+			catch(ex2) {cb(ex2)}
 		});
 	};
 
