@@ -90,7 +90,7 @@ module.exports = function(DSL) {
 
 	DSL.beforeRemote('runquery', function(context, whatever, next) {
 		var user = jwt.decodeJWT(context.req.accessToken);
-		if(!user || !context.args.id)
+		if(!user || !context.args.id || context.args.id == undefined)
 			next(inper);
 		DSL.findById(context.args.id, function (err, instance) {
 			if(user.company != instance.companyId)
