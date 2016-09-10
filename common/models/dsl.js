@@ -25,10 +25,10 @@ module.exports = function(DSL) {
 	DSL.runquery = function(id, data, cb){
 		console.log("EXECUTING QUERY:");
 		console.log(data.query);
+		var exception = new Error();
 		DSL.findById(id, function (err, instance) {
 			var Database = app.models.Database;
 			var tempId = instance.databaseId;
-			console.log(tempId);
 			try{
 				Database.findById(tempId, function (err, db) {
 					try{
@@ -40,13 +40,25 @@ module.exports = function(DSL) {
 						 			 cb(err, docs);
 							  });
 							}
-							catch(ex) {cb(ex)}
+							catch(ex) {
+								exception.status = 551;
+								exception.message = 'Database non autorizzato';
+								exception.code = 'INVALID_DATABASE';
+								cb(exception)}
 						});
 					}
-					catch(ex1) {cb(ex1)}
+					catch(ex1) {
+						exception.status = 552;
+						exception.message = 'Database non valido';
+						exception.code = 'INVALID_DATABASE';
+						cb(exception)}
 				});
 			}
-			catch(ex2) {cb(ex2)}
+			catch(ex2) {
+				exception.status = 553;
+				exception.message = 'DSLI with no Database';
+				exception.code = 'INVALID_DATABASE';
+				cb(exception)}
 		});
 	};
 
