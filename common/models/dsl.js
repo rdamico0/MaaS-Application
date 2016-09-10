@@ -27,7 +27,8 @@ module.exports = function(DSL) {
 		console.log(data.query);
 		DSL.findById(id, function (err, instance) {
 			var Database = app.models.Database;
-			var tempId = Database;
+			var tempId = instance.databaseId;
+			console.log(tempId);
 			try{
 				Database.findById(tempId, function (err, db) {
 					try{
