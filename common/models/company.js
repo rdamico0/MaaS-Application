@@ -226,7 +226,7 @@ module.exports = function(Company) {
 	});
 
 	Company.beforeRemote('*.__create__users', function(context, whatever, next) {
-		var user = jwt.decode(context.req.accessToken);
+		var user = jwt.decodeJWT(context.req.accessToken);
 		if(!user){
 			Company.findById(context.ctorArgs.id, function (err, instance) {
 				if(instance.ownerId != context.args.data.id){
