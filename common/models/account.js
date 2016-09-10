@@ -359,7 +359,12 @@ module.exports = function(Account) {
     cb = cb || utils.createPromiseCallback();
     var hashBuffer = new Buffer(this.password, 'base64');
     if (hashBuffer && plain) {
-      cb(null, scrypt.verifyKdfSync(hashBuffer, plain));
+      try{
+        cb(null, scrypt.verifyKdfSync(hashBuffer, plain));
+      }
+      catch(err){
+        cb(err, false);
+      }
     } else {
       cb(null, false);
     }

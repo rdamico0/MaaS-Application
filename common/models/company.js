@@ -239,24 +239,26 @@ module.exports = function(Company) {
 				next();
 			});
 		}
-
-		if(user.company != context.ctorArgs.id)
-			next(wrcon);
-		if(context.args.data.dutyId != 1 && context.args.data.dutyId != 2){
-			var invdt = new Error();
-			invdt.status = 422;
-			invdt.message = 'Level Access Must be 1 or 2';
-			invdt.code = 'UNPROCESSABLE_ENTITY';
-			next(invdt);
+		else{
+			console.log(user);
+			if(user.company != context.ctorArgs.id)
+				next(wrcon);
+			if(context.args.data.dutyId != 1 && context.args.data.dutyId != 2){
+				var invdt = new Error();
+				invdt.status = 422;
+				invdt.message = 'Level Access Must be 1 or 2';
+				invdt.code = 'UNPROCESSABLE_ENTITY';
+				next(invdt);
+			}
+			if(context.args.data.emailVerified){
+				var invdt = new Error();
+				invdt.status = 422;
+				invdt.message = 'Cant set Email Verified to true!';
+				invdt.code = 'UNPROCESSABLE_ENTITY';
+				next(invdt);
+			}
+			next();
 		}
-		if(context.args.data.emailVerified){
-			var invdt = new Error();
-			invdt.status = 422;
-			invdt.message = 'Cant set Email Verified to true!';
-			invdt.code = 'UNPROCESSABLE_ENTITY';
-			next(invdt);
-		}
-		next();
 	});
 
 	Company.beforeRemote('*.__get__users', function(context, whatever, next) {
