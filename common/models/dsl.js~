@@ -19,7 +19,7 @@ module.exports = function(DSL) {
 	inper.message = 'Insufficient Permission';
 	inper.code = 'AUTHORIZATION_REQUIRED';
 
-	var mte = ['findById'];
+	var mte = [];
 	ut.disableAllMethodsBut(DSL, mte);
 
 	DSL.runquery = function(id, data, cb){
@@ -42,14 +42,14 @@ module.exports = function(DSL) {
 							}
 							catch(ex) {
 								exception.status = 551;
-								exception.message = 'Database access denied';
+								exception.message = 'Database non autorizzato';
 								exception.code = 'INVALID_DATABASE';
 								cb(exception)}
 						});
 					}
 					catch(ex1) {
 						exception.status = 552;
-						exception.message = 'Invalid Database';
+						exception.message = 'Database non valido';
 						exception.code = 'INVALID_DATABASE';
 						cb(exception)}
 				});
@@ -108,35 +108,11 @@ module.exports = function(DSL) {
 		}
 		else{
 			DSL.findById(context.args.id, function (err, instance) {
+				console.log(instance);
 				if(!instance)
 					next(inper);
 				else if(user.company != instance.companyId)
 					next(wrcon);
-				else if(user.duty >= 2)
-					next();
-				else if(instance.accountId == user.email)
-					next();
-				else if(instance.permits > 0)
-					next();
-				else
-					next(inper);
-			});
-		}
-	});
-
-
-	DSL.afterRemote('findById', function(context, whatever, next) {
-		var user = jwt.decodeJWT(context.req.accessToken);
-		if(!user)
-			next(inper);
-		else{
-			var Dsls = app.models.DSL;
-			Dsls.findById(context.args.id, function (err, instance) {
-				context.result.DSLcode = instance.code;
-				if(user.company != instance.companyId)
-					next(wrcon);
-				else if(user.dsli == context.args.id)
-					next();
 				else if(user.duty >= 2)
 					next();
 				else if(instance.accountId == user.email)

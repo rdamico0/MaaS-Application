@@ -19,7 +19,7 @@ module.exports = function(Company) {
 	inper.code = 'AUTHORIZATION_REQUIRED';
 
 	var mte = ['create', 'exists',
-'__findById__dsls', '__destroyById__dsls', '__updateById__dsls', '__get__dsls', '__create__dsls',
+'__destroyById__dsls', '__updateById__dsls', '__get__dsls', '__create__dsls',
 '__findById__databases', '__destroyById__databases', '__updateById__databases', '__get__databases', '__create__databases',
 '__findById__users', '__destroyById__users', '__updateById__users', '__get__users', '__create__users'];
 	ut.disableAllMethodsBut(Company, mte);
@@ -126,26 +126,6 @@ module.exports = function(Company) {
 		}
 		else
 			next();
-	});
-
-	Company.afterRemote('*.__findById__dsls', function(context, whatever, next) {
-		var user = jwt.decodeJWT(context.req.accessToken);
-		if(!user)
-			next(inper);
-		if(user.company != context.ctorArgs.id)
-			next(wrcon);
-		var Dsls = app.models.DSL;
-		Dsls.findById(context.args.fk, function (err, instance) {
-			context.result.DSLcode = instance.code;
-			if(user.duty >= 2)
-				next();
-			else if(instance.accountId == user.email)
-				next();
-			else if(instance.permits > 0)
-				next();
-			else
-				next(inper);
-		});
 	});
 
 // </editor-fold>
