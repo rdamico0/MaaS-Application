@@ -18,8 +18,7 @@
 html, body {
     font-family:'Open Sans', sans-serif;
     font-size:14px;
-    background-image:url(../img/sativa.png);
-    padding-top: 3.5%;
+    padding-top: 2%;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -49,10 +48,8 @@ h2 {
 }
 h3 {
     line-height:30px;
-    padding-bottom:20px;
 }
 h4 {
-  padding-top: 25px;
   line-height: 40px;
   padding-bottom: 0px;
   font-size: 22px;
@@ -77,7 +74,7 @@ p {
    color:#fff;
 }
 .form-control {
-        background-color: rgba(255, 255, 255, 0);
+  background-color: rgba(255, 255, 255, 0);
 }
 
 .userManagement > .form-group > .form-control {
@@ -86,13 +83,32 @@ p {
   float: left;
 }
 
-.userManagement > .btn {
+.userManagement > .form-group > .btn {
   margin-left: 2%;
 }
 
 .Editor {
   margin-left: 4%;
   text-align: center;
+}
+
+#EditorAce {
+  clear:both;
+  align-self: center;
+  text-align: left;
+}
+
+.Editor .form-control {
+  width: 80%;
+}
+
+.data-label {
+  float: left;
+  margin-right: 10px;
+}
+
+.form-group .profile{
+  float:none;
 }
 
 .Editor > .buttons > .btn{
@@ -103,6 +119,18 @@ p {
 
 .DSLITitle > h2 > .btn {
   margin-left: 4%;
+}
+
+tbody > tr > td > .form-group {
+  margin: 0;
+}
+
+table {
+  clear:both;
+}
+
+.modal-dialog {
+  margin: 0px;
 }
 
 /*=======================================
@@ -122,6 +150,28 @@ p {
     padding-top:15%;
     padding-bottom:15%;
     color:#fff;
+}
+
+.top {
+  overflow:hidden;
+}
+.top .title {
+  float: left;
+  margin-left: 10px;
+}
+
+.top .buttons {
+  float: right;
+  margin-top: 2.3%;
+  margin-right: 5%;
+}
+
+div .top .buttons {
+  margin-top: 2.5%;
+  margin-right: 5%;
+}
+div .top .buttons button {
+  margin-left: 10px;
 }
 
 .home > .btn {
@@ -145,7 +195,37 @@ p {
 
 .btn-lg, .btn-group-lg > .btn {
 border-radius: 0px;
+}
 
+.developer > .btn {
+  margin-left: 35%;
+  margin-top: 5%;
+}
+
+.loading {
+  margin-left: 45%;
+  margin-top: 15%;
+  margin-bottom: 15%;
+  font-size:20px;
+}
+
+.error {
+  font-size:30px;
+  color: #FF0000;
+  margin-left: 40%;
+}
+
+.check-error {
+  width: 95%;
+}
+
+.dropdown.btn-group {
+  margin-bottom: 7%;
+}
+
+.Impersonate {
+   height: 250px;
+   width: auto;
 }
 /* ===========================================================
    NAVBAR CHANGES
@@ -154,8 +234,6 @@ border-radius: 0px;
    	font-size: 14px;
     margin-bottom: 0px;
    }
-
-
 
    .navbar-inverse .navbar-brand {
    	color: #ffffff;
@@ -182,88 +260,6 @@ border-radius: 0px;
     padding: 10px;
     width: auto;
   }
-
-/*=======================================
-    PRICE SECTION STYLES
-==================================================*/
-
-.plan {
-    background: #D8D8D8;
-    padding: 0 0 15px 0;
-    margin: 30px 0px;
-    list-style: none;
-    text-align: center;
-
-}
-
-
-
-.plan li {
-   padding: 25px 0px;
-color: #858585;
-font-size: 25px;
-}
-
-.plan li.plan-head {
-    background-color:#000!important;
-   padding: 15px 0px;
-color: #FFFFFF;
-line-height: 20px;
-font-size: 20px;
-font-weight: 600;
-border: none;
-   }
-
-.plan li.main-price {
-   padding: 25px 0px;
-background-color:rgba(31, 138, 99, 1);
-color: #fff;
-border: none;
-font-weight: 900;
-font-size: 45px;
-}
-
-
-/*=======================================
-    SERVICE SECTION STYLES
-==================================================*/
-#services-inner {
-    padding-top:50px;
-    padding-bottom:40px;
-}
-
-.service-div {
-	width: 100%;
-	min-height: 100px;
-	background-color: rgba(0, 121, 138, 1);
-	box-shadow: none;
-	border: 0;
-    padding:20px;
-    margin-bottom:30px;
-    color:#fff;
-    font-size:16px;
-    padding-top: 45px;
-}
-.service-div > i {
-    color:#fff;
-}
-
-/*=======================================
-    STATS SECTION STYLES
-==================================================*/
-.stats-div {
-    text-align:center;
-    width: 100%;
-    min-height: 100px;
-    padding: 30px 20px 30px 20px;
-}
-
-.stats-div > h3 {
-    font-size:60px;
-    font-weight:900;
-}
-
-
 
 /*    --------------------------------------------------
 	:: Login Section
@@ -330,7 +326,7 @@ font-size: 45px;
 }
 
 /*    --------------------------------------------------
-	:: Login Section
+	:: Sigup Section
 	-------------------------------------------------- */
 #signin {
   padding-top: 4%;
@@ -423,11 +419,21 @@ body {
   position: absolute;
   bottom: 0;
   width: 100%;
-  /* Set the fixed height of the footer here */
   height: 8%;
   background-color:#000;
-  color:#fff;
   text-align:right;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 10px 15px;
+  text-decoration:none;
+}
+
+#footer > a {
+  color:#FFFFFF;
+  font-family: 'Arial', sans-serif;
+}
+#footer > a:hover {
+  text-decoration:none;
 }
 
 /*    --------------------------------------------------

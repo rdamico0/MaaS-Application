@@ -56,7 +56,7 @@ module.exports = function(Account) {
     return cb.promise;
   };
 
-  Account.login = function(credentials, include, cb) {
+  Account.login = function(credentials, include, cb, grant) {
     var self = this;
     if (typeof include === 'function') {
       cb = include;
@@ -100,27 +100,39 @@ module.exports = function(Account) {
         cb(defaultError);
       } else if (user) {
         user.hasPassword(credentials.password, function(err, isMatch) {
-          if (err) {
-            console.log('An error is reported from User.hasPassword: %j', err);
-            cb(defaultError);
-          } else if (isMatch) {
-            if (self.settings.emailVerificationRequired && !user.emailVerified) {
-              // Fail to log in if email verification is not done yet
-              console.log('User email has not been verified');
-              err = new Error('login failed as the email has not been verified');
-              err.statusCode = 401;
-              err.code = 'LOGIN_FAILED_EMAIL_NOT_VERIFIED';
-              cb(err);
-            } else {
-              if (user.createAccessToken.length === 2) {
-                user.createAccessToken(credentials.ttl, tokenHandler);
-              } else {
-                user.createAccessToken(credentials.ttl, user, tokenHandler);
+          if(!grant){
+            if (err) {
+              console.log('An error is reported from User.hasPassword: %j', err);
+              cb(defaultError);
+            }
+            else if (isMatch) {
+              if (self.settings.emailVerificationRequired && !user.emailVerified) {
+                // Fail to log in if email verification is not done yet
+                console.log('User email has not been verified');
+                err = new Error('login failed as the email has not been verified');
+                err.statusCode = 401;
+                err.code = 'LOGIN_FAILED_EMAIL_NOT_VERIFIED';
+                cb(err);
+              }
+              else {
+                if (user.createAccessToken.length === 2) {
+                  user.createAccessToken(credentials.ttl, tokenHandler);
+                } else {
+                  user.createAccessToken(credentials.ttl, user, tokenHandler);
+                }
               }
             }
-          } else {
-            console.log('The password is invalid for user %s', user.email || user.username);
-            cb(defaultError);
+            else {
+              console.log('The password is invalid for user %s', user.email || user.username);
+              cb(defaultError);
+            }
+          }
+          else{
+            if (user.createAccessToken.length === 2) {
+              user.createAccessToken(credentials.ttl, tokenHandler);
+            } else {
+              user.createAccessToken(credentials.ttl, user, tokenHandler);
+            }
           }
         });
       } else {
@@ -148,10 +160,10 @@ module.exports = function(Account) {
   Account.impersonate = function(email, include, cb) {
     var Accounts = app.models.Account;
     Accounts.findById(email, function (err, instance) {
-      Accounts.login({email:email,password:instance.password}, include, function (err, instance){
+      Accounts.login({email:email,password:"password"}, include, function (err, instance){
         var obj = instance;
         cb(err, instance);
-      });
+      }, true);
     });
   };
 
@@ -337,7 +349,7 @@ module.exports = function(Account) {
 
       options = {}
 			options.type = "email";
-      options.text = "Hi, click here to reset your password: https://mass-demo.herokuapp.com/repwd?pwd=" + Account.getPasswordToken(email);
+      options.text = "Hi, click here to reset your password: "+(app && app.get('clienthost'))+"/repwd?pwd=" + Account.getPasswordToken(email);
       options.from = "no.reply@maas.com";
       options.to = email;
       options.subject = "Email Recovery";
