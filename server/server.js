@@ -5,7 +5,8 @@ var app = module.exports = loopback();
 
 app.start = function() {
   // start the web server
-  app.set('jwtTokenSecret', 'asdasdasdasdasdasdasdasd');
+  app.set('jwtTokenSecret', process.env.JWT);
+  console.log(process.env.JWT);
   app.set('clienthost', 'maas-demo.herokuapp.com');
   return app.listen(function() {
     app.emit('started');
