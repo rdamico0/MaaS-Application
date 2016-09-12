@@ -15,10 +15,7 @@
         "host": "smtp.gmail.com",
         "secure": true,
         "port": 465,
-        "auth": {
-          "user": "matrioska.io.go@gmail.com",
-          "pass": "Ritardatari2016"
-        }
+        "auth": {}
       }
     ]
   }
